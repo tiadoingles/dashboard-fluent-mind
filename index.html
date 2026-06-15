@@ -1,0 +1,1349 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#060d1f;--bg1:#0a1628;--bg2:#0f1e38;--bg3:#162540;--bg4:#1d2f50;
+  --acc:#7c4dff;--acc2:#00e5ff;--acc3:#ff4081;--acc4:#69ff47;--acc5:#ffab40;
+  --border:rgba(124,77,255,.15);--border2:rgba(0,229,255,.12);
+  --txt:#e2e8f0;--txt2:#8899aa;--txt3:#4a5a7a;
+  --glow-p:rgba(124,77,255,.3);--glow-c:rgba(0,229,255,.25);
+  --sidebar:220px;
+}
+body{font-family:'Inter',system-ui;background:var(--bg0);color:var(--txt);font-size:13px;display:flex;min-height:100vh;overflow-x:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100}
+.sb-logo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.sb-logo-title{font-size:14px;font-weight:700;color:#fff;letter-spacing:.02em}
+.sb-logo-title span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sb-logo-sub{font-size:10px;color:var(--txt3);margin-top:2px}
+.sb-nav{flex:1;padding:12px 0}
+.sb-section{font-size:9px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;padding:12px 16px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;transition:all .2s;color:var(--txt2);font-size:12px;font-weight:500;border-left:3px solid transparent;position:relative}
+.sb-item:hover{color:var(--txt);background:rgba(124,77,255,.08);border-left-color:rgba(124,77,255,.4)}
+.sb-item.active{color:var(--acc2);background:linear-gradient(90deg,rgba(124,77,255,.15),transparent);border-left-color:var(--acc2)}
+.sb-item .icon{width:18px;text-align:center;font-size:14px;flex-shrink:0}
+.sb-badge{margin-left:auto;font-size:9px;background:var(--acc3);color:#fff;padding:1px 6px;border-radius:10px;font-weight:600}
+.sb-footer{padding:12px 16px;border-top:1px solid var(--border)}
+.sb-status{display:flex;align-items:center;gap:8px;font-size:11px}
+.sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sb-dot.ok{background:var(--acc4);box-shadow:0 0 6px var(--acc4)}
+.sb-dot.warn{background:var(--acc5);box-shadow:0 0 6px var(--acc5)}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--bg1);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50}
+.tb-left{font-size:12px;color:var(--txt2)}
+.tb-left strong{color:var(--txt);font-size:14px;font-weight:600;display:block}
+.tb-right{display:flex;align-items:center;gap:10px}
+.btn-refresh{background:linear-gradient(135deg,var(--acc),#5c35cc);border:none;color:#fff;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:.03em;transition:all .2s;box-shadow:0 0 12px var(--glow-p)}
+.btn-refresh:hover{box-shadow:0 0 20px var(--glow-p);transform:translateY(-1px)}
+.clock{font-size:12px;color:var(--acc2);font-weight:500;font-variant-numeric:tabular-nums}
+.content{padding:20px 24px;flex:1}
+
+/* ── METRICS ── */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.mcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:default}
+.mcard:hover{transform:translateY(-2px)}
+.mcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.mcard.cp::before{background:linear-gradient(90deg,var(--acc),#a97cff)}
+.mcard.cc::before{background:linear-gradient(90deg,var(--acc2),#0097a7)}
+.mcard.co::before{background:linear-gradient(90deg,var(--acc3),#ff6b9d)}
+.mcard.cg::before{background:linear-gradient(90deg,var(--acc4),#00c853)}
+.mcard.cy::before{background:linear-gradient(90deg,var(--acc5),#ff6f00)}
+.mcard.cm::before{background:linear-gradient(90deg,#e040fb,var(--acc))}
+.mcard .lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.mcard .val{font-size:26px;font-weight:700;color:#fff;line-height:1}
+.mcard .sub{font-size:10px;color:var(--txt3);margin-top:4px}
+.mcard .spark{position:absolute;bottom:0;right:0;width:80px;height:40px;opacity:.3}
+.glow-p{box-shadow:0 4px 20px rgba(124,77,255,.2)}
+.glow-c{box-shadow:0 4px 20px rgba(0,229,255,.15)}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:16px}
+.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.card-title{font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.card-sub{font-size:11px;color:var(--txt3)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+@media(max-width:700px){.two-col,.three-col{grid-template-columns:1fr}}
+
+/* ── FILTERS ── */
+.filters{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.radio-group{display:flex;gap:4px;flex-wrap:wrap}
+.rbtn{padding:4px 11px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;color:var(--txt2);background:var(--bg4);border:1px solid var(--border);transition:all .15s}
+.rbtn.sel{background:linear-gradient(135deg,rgba(124,77,255,.3),rgba(0,229,255,.15));color:var(--acc2);border-color:rgba(0,229,255,.4)}
+.fi{background:var(--bg4);border:1px solid var(--border2);border-radius:7px;padding:5px 10px;font-size:11px;color:var(--txt);outline:none;transition:border .2s}
+.fi:focus{border-color:rgba(124,77,255,.6)}
+.fi::placeholder{color:var(--txt3)}
+.chk-lbl{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:var(--txt2)}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1px solid var(--border2)}
+th{text-align:left;font-weight:500;padding:8px 10px;color:var(--txt3);font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--txt)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(124,77,255,.06)}
+.men-row td{background:rgba(124,77,255,.05)}
+.men-row:hover td{background:rgba(124,77,255,.12)}
+.alert-row td{background:rgba(255,64,129,.05)}
+.alert-row:hover td{background:rgba(255,64,129,.1)}
+
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500}
+.b-av{background:rgba(105,255,71,.12);color:var(--acc4);border:1px solid rgba(105,255,71,.2)}
+.b-int{background:rgba(0,229,255,.12);color:var(--acc2);border:1px solid rgba(0,229,255,.2)}
+.b-bas{background:rgba(255,171,64,.12);color:var(--acc5);border:1px solid rgba(255,171,64,.2)}
+.b-rec{background:rgba(255,64,129,.12);color:var(--acc3);border:1px solid rgba(255,64,129,.2)}
+.b-men{background:rgba(124,77,255,.2);color:#b39ddb;border:1px solid rgba(124,77,255,.3)}
+.b-ativo{background:rgba(105,255,71,.12);color:var(--acc4);border:1px solid rgba(105,255,71,.2)}
+.b-exp{background:rgba(255,64,129,.12);color:var(--acc3);border:1px solid rgba(255,64,129,.2)}
+.b-60{background:rgba(255,171,64,.12);color:var(--acc5);border:1px solid rgba(255,171,64,.2)}
+.b-30{background:rgba(255,235,59,.12);color:#fff176;border:1px solid rgba(255,235,59,.2)}
+.b-alert{background:rgba(255,64,129,.2);color:var(--acc3);border:1px solid rgba(255,64,129,.4);animation:pulse 2s infinite}
+.b-ok{background:rgba(105,255,71,.2);color:var(--acc4);border:1px solid rgba(105,255,71,.4)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ── AVATAR ── */
+.avatar{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.av-p{background:rgba(124,77,255,.25);color:#b39ddb;border:1px solid rgba(124,77,255,.4)}
+.av-c{background:rgba(0,229,255,.2);color:var(--acc2);border:1px solid rgba(0,229,255,.3)}
+.av-g{background:rgba(105,255,71,.2);color:var(--acc4);border:1px solid rgba(105,255,71,.3)}
+
+/* ── BARS ── */
+.bar-row{display:flex;align-items:center;gap:6px}
+.bar{height:8px;border-radius:2px;min-width:2px}
+.blab{background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.barena{background:linear-gradient(90deg,var(--acc3),var(--acc5))}
+.pb{background:var(--bg4);border-radius:3px;height:5px;margin-top:3px}
+.pbf{height:5px;border-radius:3px}
+
+/* ── PODIUM ── */
+.podium-wrap{display:flex;align-items:flex-end;justify-content:center;gap:10px;padding:16px 0 0}
+.podium-col{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;max-width:110px}
+.podium-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid}
+.podium-bar{width:100%;border:1px solid;border-bottom:none;border-radius:6px 6px 0 0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;position:relative;overflow:hidden}
+.podium-bar::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,currentColor,transparent);opacity:.08}
+
+/* ── HEATMAP ── */
+.heatmap{display:grid;grid-template-columns:50px repeat(7,1fr);gap:2px;font-size:10px}
+.hm-label{color:var(--txt3);display:flex;align-items:center;justify-content:center;padding:3px}
+.hm-cell{height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;transition:transform .15s;cursor:default}
+.hm-cell:hover{transform:scale(1.1);z-index:1}
+
+/* ── TOGGLE ── */
+.toggle-btn{background:var(--bg4);border:1px solid var(--border2);color:var(--acc2);padding:4px 11px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;display:flex;align-items:center;gap:5px;transition:all .15s}
+.toggle-btn:hover{background:var(--bg3);border-color:rgba(124,77,255,.4)}
+
+/* ── SPARKLINE ── */
+.sparkline{display:inline-block}
+
+/* ── CONFIG ── */
+.step-num{min-width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+textarea.code-area{width:100%;font-family:monospace;font-size:10px;padding:12px;border:1px solid var(--border2);border-radius:8px;background:var(--bg0);color:var(--acc2);resize:vertical;line-height:1.6}
+code{font-family:monospace;font-size:10px;background:var(--bg4);padding:2px 6px;border-radius:4px;border:1px solid var(--border);color:var(--acc2)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.rank-num{font-size:11px;color:var(--txt3)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg1)}
+::-webkit-scrollbar-thumb{background:rgba(124,77,255,.4);border-radius:2px}
+</style>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-title">Fluent Mind <span>Academy</span></div>
+    <div class="sb-logo-sub">Dashboard de Presença</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Principal</div>
+    <div class="sb-item active" data-tab="geral" onclick="navTo('geral',this)">
+      <span class="icon">⊞</span> Visão Geral
+    </div>
+    <div class="sb-item" data-tab="analise" onclick="navTo('analise',this)">
+      <span class="icon">📊</span> Análise
+    </div>
+    <div class="sb-item" data-tab="ranking" onclick="navTo('ranking',this)">
+      <span class="icon">🏆</span> Ranking
+    </div>
+    <div class="sb-section">Práticas</div>
+    <div class="sb-item" data-tab="labs" onclick="navTo('labs',this)">
+      <span class="icon">🧪</span> Fluent Labs
+    </div>
+    <div class="sb-item" data-tab="arenas" onclick="navTo('arenas',this)">
+      <span class="icon">💬</span> Arenas
+    </div>
+    <div class="sb-section">Alunos</div>
+    <div class="sb-item" data-tab="mentorados" onclick="navTo('mentorados',this)">
+      <span class="icon">⭐</span> Mentorados
+    </div>
+    <div class="sb-item" data-tab="busca" onclick="navTo('busca',this)">
+      <span class="icon">🔍</span> Buscar Aluno
+    </div>
+    <div class="sb-section">Sistema</div>
+    <div class="sb-item" data-tab="config" onclick="navTo('config',this)">
+      <span class="icon">⚙</span> Conectar
+    </div>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-status">
+      <div class="sb-dot warn" id="sb-dot"></div>
+      <span id="sb-status-txt" style="color:var(--txt2);font-size:11px">dados locais</span>
+    </div>
+    <div style="font-size:10px;color:var(--txt3);margin-top:4px" id="sb-ts"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <strong>Dashboard de Presença</strong>
+      <span id="tb-page">Visão Geral</span>
+    </div>
+    <div class="tb-right">
+      <span class="clock" id="clock">--:--:--</span>
+      <button class="btn-refresh" onclick="loadData()">↻ Atualizar</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="metrics" id="metrics"></div>
+    <div id="pgeral"></div>
+    <div id="panalise" style="display:none"></div>
+    <div id="pranking" style="display:none"></div>
+    <div id="plabs" style="display:none"></div>
+    <div id="parenas" style="display:none"></div>
+    <div id="pmentorados" style="display:none"></div>
+    <div id="pbusca" style="display:none"></div>
+    <div id="pconfig" style="display:none"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+/* ─── CLOCK ─── */
+setInterval(()=>{
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('pt-BR');
+},1000);
+
+/* ─── RAW DATA ─── */
+const RAW_LABS=`21/05/2026 07:07:04,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+21/05/2026 07:07:09,bel pocai,belpocai@gmail.com
+21/05/2026 07:07:52,Edith Girardi,emcgirardi@gmail.com
+21/05/2026 07:08:44,Adry Santos,adry@canaldojoel.com
+21/05/2026 20:05:34,Adry Santos,adry@canaldojoel.com
+21/05/2026 20:05:55,Michele Cabral,peritomichelecabral@gmail.com
+21/05/2026 20:05:56,Edith Girardi,emcgirardi@gmail.com
+21/05/2026 20:05:58,Silvia Berezin,silvia.berezin@gmail.com
+26/05/2026 07:41:18,Adry Santos,adry@canaldojoel.com
+26/05/2026 07:41:27,Tatiana Rodrigues,tatianarnv8@gmail.com
+26/05/2026 07:41:27,Simone Santos,simone.santosck@gmail.com
+26/05/2026 07:41:28,Fernanda Colletti,fernanda@fernandacolletti.com.br
+26/05/2026 07:41:35,bel pocai,belpocai@gmail.com
+26/05/2026 07:41:49,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+27/05/2026 07:41:02,Tatiana Rodrigues,tatianarnv8@gmail.com
+27/05/2026 07:41:08,Adry Santos,adry@canaldojoel.com
+27/05/2026 07:41:10,Fernanda Colletti,fernanda@fernandacolletti.com.br
+27/05/2026 07:41:24,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+27/05/2026 07:41:26,Maria Cecilia Tuccimei Guinle,mctguinle@hotmail.com
+27/05/2026 07:42:41,Bianca Carvalho Leao,bcarvalho20@yahoo.com.br
+01/06/2026 07:52:43,Paula Albuquerque,paula.carvalho.albuquerque@gmail.com
+01/06/2026 07:52:47,bel pocai,belpocai@gmail.com
+01/06/2026 07:52:48,Vanessa Salles,4vsalles@gmail.com
+01/06/2026 07:52:58,Ana Cristina Mateus,ctbmana1@gmail.com
+01/06/2026 07:53:08,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+01/06/2026 07:53:12,Ligia Monteiro Albertini Ayach,ligiaayach@gmail.com
+01/06/2026 07:53:12,Adry Santos,adry@canaldojoel.com
+01/06/2026 07:53:15,Daniela Dorigon,daniela.dorigon@gmail.com
+01/06/2026 16:40:13,bel pocai,belpocai@gmail.com
+01/06/2026 16:40:19,Fernanda Colletti,fernanda@fernandacolletti.com.br
+01/06/2026 16:40:22,Aline Paula Echevarria,alinepaula0001@gmail.com
+01/06/2026 16:40:25,Paula Aiello,paulagazoni21@hotmail.com
+01/06/2026 16:40:35,Mercia Insardi,mercia.insardi@gmail.com
+01/06/2026 16:40:37,Bianca Carvalho Leao,bcarvalho20@yahoo.com.br
+01/06/2026 16:40:44,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br
+01/06/2026 16:40:55,Rita Aparecida Madeira Arnoni,ritamarnoni@gmai.com
+01/06/2026 16:41:06,Edith Girardi,emcgirardi@gmail.com
+01/06/2026 16:41:07,Celia Maria da Silva Oliveira,celia.silvaoliveira@yahoo.com.br
+02/06/2026 07:08:00,Adry Santos,adry@canaldojoel.com
+02/06/2026 07:38:20,Fernanda Colletti,fernanda@fernandacolletti.com.br
+02/06/2026 07:39:37,bel pocai,belpocai@gmail.com
+02/06/2026 07:39:38,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+02/06/2026 07:39:48,Zaida Santos,zaida@uai.com.br
+02/06/2026 07:40:25,Evangelina Reis Salgado,evangelinareis9@gmail.com
+02/06/2026 07:40:55,Maricy Zampieri Lima Teodoro,mt_psicintegrada@outlook.com
+03/06/2026 07:09:15,Adry Santos,adry@canaldojoel.com
+03/06/2026 07:14:37,Vanessa Salles,4vsalles@gmail.com
+03/06/2026 07:20:50,Ana Cristina Mateus,ctbmana1@gmail.com
+03/06/2026 07:38:23,Fernanda Colletti,fernanda@fernandacolletti.com.br
+03/06/2026 07:38:26,bel pocai,belpocai@gmail.com
+03/06/2026 07:38:27,Dagma Rosa,dagmagoncalvesrosa@gmail.com
+03/06/2026 07:38:44,Simone Santos,simone.santosck@gmail.com
+08/06/2026 07:36:24,Fernanda Colletti,fernanda@fernandacolletti.com.br
+08/06/2026 07:38:20,Ana Cristina Mateus,ctbmana1@gmail.com
+08/06/2026 07:48:50,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+09/06/2026 07:24:24,Adry Santos,adry@canaldojoel.com
+09/06/2026 07:34:50,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+09/06/2026 07:38:28,Ana Cristina Mateus,ctbmana1@gmail.com
+09/06/2026 07:39:10,Luciana Cibreiros,lucibreiros@gmail.com
+09/06/2026 07:39:21,Bianca Carvalho Leao,bcarvalho20@yahoo.com.br
+09/06/2026 07:43:28,Fernanda Colletti,fernanda@fernandacolletti.com.br
+09/06/2026 07:43:35,bel pocai,belpocai@gmail.com
+09/06/2026 07:43:52,Eloisa Faria,elofariagoncalves@gmail.com
+10/06/2026 07:09:45,Adry Santos,adry@canaldojoel.com
+10/06/2026 07:43:10,Fernanda Colletti,fernanda@fernandacolletti.com.br
+10/06/2026 07:43:23,Ana Cristina Mateus,ctbmana1@gmail.com
+10/06/2026 18:56:23,Sandra Regina Viana da Silva,sandra.viana34@gmail.com
+10/06/2026 18:56:45,Deise Sueli de Pietro Caputo,deisecaputo@hotmail.com
+10/06/2026 18:56:59,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br
+10/06/2026 19:00:28,Ligia Monteiro Albertini Ayach,ligiaayach@gmail.com
+10/06/2026 19:02:37,Maria de Lourdes Duarte Avelar,lourdinhavelar@gmail.com
+10/06/2026 19:04:58,Raimunda Telma Macedo Santos,telmacedo@uol.com.br
+10/06/2026 19:05:02,Simone Santos,simone.santosck@gmail.com
+10/06/2026 19:05:07,Adry Santos,adry@canaldojoel.com
+10/06/2026 19:05:20,Veruska Lima,veruska.monica@gmail.com
+10/06/2026 19:05:40,Maria de Fatima de Araujo,fatinhaitu@gmail.com
+10/06/2026 19:05:51,Claudia Surita,csurita@gmail.com
+10/06/2026 19:06:09,Eliane Brito de Araujo,elianebaraujo2@gmail.com
+10/06/2026 19:06:33,Silvia Berezin,silvia.berezin@gmail.com
+11/06/2026 07:37:55,Adry Santos,adry@canaldojoel.com
+11/06/2026 07:38:04,Fernanda Colletti,fernanda@fernandacolletti.com.br
+11/06/2026 07:38:12,bel pocai,belpocai@gmail.com
+11/06/2026 07:38:12,Ana Cristina Mateus,ctbmana1@gmail.com
+11/06/2026 07:46:23,Luciana Cibreiros,lucibreiros@gmail.com
+11/06/2026 15:22:37,Sandra Moraes,moraessandra1953@gmail.com
+11/06/2026 20:37:22,Adry Santos,adry@canaldojoel.com
+11/06/2026 20:37:25,Vanessa Salles,4vsalles@gmail.com
+11/06/2026 20:37:26,bel pocai,belpocai@gmail.com
+11/06/2026 20:37:36,Veruska Lima,veruska.monica@gmail.com
+11/06/2026 20:38:02,Maria de Lourdes Duarte Avelar,lourdinhavelar@gmail.com
+11/06/2026 20:38:02,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br
+11/06/2026 20:38:45,Raimunda Telma Macedo Santos,telmacedo@uol.com.br
+11/06/2026 20:40:56,Sandra Regina Viana da Silva,sandra.viana34@gmail.com
+11/06/2026 20:43:09,Sandra Moraes,moraessandra1953@gmail.com
+11/06/2026 20:51:17,Dirlene Lobo,dirlenepo@yahoo.com
+12/06/2026 07:42:32,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+12/06/2026 07:42:43,Maria de Fatima de Araujo,fatinhaitu@gmail.com
+12/06/2026 07:42:52,Adry Santos,adry@canaldojoel.com`;
+
+const RAW_ARENAS=`20/05/2026 11:02:42,Aline Prado,aline@projetarviagens.com.br,BÁSICO
+20/05/2026 11:03:11,Maria de Lourdes Duarte Avelar,lourdinhavelar@gmail.com,BÁSICO
+20/05/2026 11:03:23,Celia Maria da Silva Oliveira,celia.silvaoliveira@yahoo.com.br,BÁSICO
+20/05/2026 11:04:19,Elizabeth Maria Oliveira de Andrade,emoa0105@gmail.com,BÁSICO
+20/05/2026 11:05:57,Josete Boff Dalmagro,joseteboffdalmagro211280@gmail.com,BÁSICO
+20/05/2026 18:06:43,Michele Cabral,peritomichelecabral@gmail.com,RECÉM CHEGADOS
+20/05/2026 18:49:21,Jane Spessatto,jane_spessatto@hotmail.com,RECÉM CHEGADOS
+20/05/2026 18:49:29,Wania Nobrega Sanches,wns6379@gmail.com,RECÉM CHEGADOS
+20/05/2026 20:06:24,bel pocai,belpocai@gmail.com,AVANÇADO
+20/05/2026 20:06:38,Adry Santos,adry@canaldojoel.com,AVANÇADO
+20/05/2026 20:07:09,Maria de Fatima de Araujo,fatinhaitu@gmail.com,BÁSICO
+20/05/2026 20:07:12,Adry Santos,adry@canaldojoel.com,INTERMEDIÁRIO
+20/05/2026 20:07:22,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,INTERMEDIÁRIO
+20/05/2026 20:07:41,Celia Regina Araujo,celia_aragu@hotmail.com,INTERMEDIÁRIO
+20/05/2026 20:59:46,Adelia Teixeira Alcantara,adeliateix@yahoo.com.br,INTERMEDIÁRIO
+21/05/2026 07:07:40,Adry Santos,adry@canaldojoel.com,AVANÇADO
+21/05/2026 17:04:33,Daniela Caldas,danicaldas2004@hotmail.com,RECÉM CHEGADOS
+21/05/2026 17:04:38,Kelly Carneiro,kellyglauce@yahoo.com.br,RECÉM CHEGADOS
+21/05/2026 17:05:01,Vera Lucia de Barros,veluba.barros@gmail.com,RECÉM CHEGADOS
+25/05/2026 18:11:26,Maria de Lourdes Duarte Avelar,lourdinhavelar@gmail.com,BÁSICO
+25/05/2026 18:41:20,Dirce Ap Valerio da Fonseca,dirceavalerio@gmail.com,BÁSICO
+25/05/2026 18:41:20,Aline Prado,aline@projetarviagens.com.br,BÁSICO
+25/05/2026 18:41:39,Vera Lucia de Barros,veluba.barros@gmail.com,BÁSICO
+25/05/2026 18:42:01,Maria de Fatima de Araujo,fatinhaitu@gmail.com,BÁSICO
+25/05/2026 20:23:23,Adry Santos,adry@canaldojoel.com,INTERMEDIÁRIO
+25/05/2026 20:24:18,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com,INTERMEDIÁRIO
+25/05/2026 20:47:06,Ercilia Goncalves,erciliamag@gmail.com,AVANÇADO
+26/05/2026 11:07:53,bel pocai,belpocai@gmail.com,INTERMEDIÁRIO
+26/05/2026 11:07:56,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,INTERMEDIÁRIO
+26/05/2026 11:09:02,Maria de Fatima de Araujo,fatinhaitu@gmail.com,INTERMEDIÁRIO
+01/06/2026 17:50:24,Marcelo Martins,omarceloms@hotmail.com,AVANÇADO
+01/06/2026 17:50:43,bel pocai,belpocai@gmail.com,AVANÇADO
+01/06/2026 17:51:04,Ana Celia Madeira,ac.madeira@hotmail.com,AVANÇADO
+01/06/2026 17:51:15,Tatiana Torrecilha,tatiana.torrecilha@gmail.com,AVANÇADO
+01/06/2026 17:51:15,Valeria Medeiros,valeriamellomedeiros@gmail.com,AVANÇADO
+01/06/2026 17:51:21,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,AVANÇADO
+01/06/2026 20:06:53,Adry Santos,adry@canaldojoel.com,INTERMEDIÁRIO
+01/06/2026 20:07:15,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,INTERMEDIÁRIO
+01/06/2026 20:10:19,Ercilia Goncalves,erciliamag@gmail.com,AVANÇADO
+03/06/2026 11:32:22,Nathalye Amaral,nathalye464@gmail.com,BÁSICO
+03/06/2026 11:32:50,Wania Nobrega Sanches,wns6379@gmail.com,BÁSICO
+03/06/2026 20:52:07,Adry Santos,adry@canaldojoel.com,INTERMEDIÁRIO
+03/06/2026 20:52:13,bel pocai,belpocai@gmail.com,AVANÇADO
+03/06/2026 20:52:30,Edith Girardi,emcgirardi@gmail.com,INTERMEDIÁRIO
+03/06/2026 20:52:31,Vanessa Salles,4vsalles@gmail.com,INTERMEDIÁRIO
+03/06/2026 20:52:38,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,INTERMEDIÁRIO
+03/06/2026 20:52:41,Ana Lucia Lemes,analuciasl20@hotmail.com,INTERMEDIÁRIO
+09/06/2026 11:21:53,Maria de Fatima de Araujo,fatinhaitu@gmail.com,BÁSICO
+09/06/2026 11:22:10,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,INTERMEDIÁRIO
+09/06/2026 11:28:23,bel pocai,belpocai@gmail.com,INTERMEDIÁRIO
+09/06/2026 11:35:47,Maria Angela,ls.mariaangela@gmail.com,INTERMEDIÁRIO
+10/06/2026 11:07:04,Maria Angela,ls.mariaangela@gmail.com,BÁSICO
+10/06/2026 11:07:06,Silvia Maria da Silva,nutrisil2012@gmail.com,BÁSICO
+10/06/2026 11:07:12,Priscila Teixeira Duarte Medeiros,pri.tdmedeiros@gmail.com,BÁSICO
+10/06/2026 11:07:17,Maria de Fatima de Araujo,fatinhaitu@gmail.com,BÁSICO
+10/06/2026 11:07:37,Maria de Lourdes Duarte Avelar,lourdinhavelar@gmail.com,BÁSICO
+10/06/2026 11:08:18,Josete Boff Dalmagro,joseteboffdalmagro211280@gmail.com,BÁSICO
+10/06/2026 18:05:26,Priscila Teixeira Duarte Medeiros,pri.tdmedeiros@gmail.com,RECÉM CHEGADOS
+10/06/2026 18:05:42,Adry Santos,adry@canaldojoel.com,RECÉM CHEGADOS
+10/06/2026 18:06:02,Sandra Regina Viana da Silva,sandra.viana34@gmail.com,RECÉM CHEGADOS
+10/06/2026 18:06:09,Wania Nobrega Sanches,wns6379@gmail.com,RECÉM CHEGADOS
+10/06/2026 18:06:15,Rosiane Ramos P Straiotto,rosian.comestraiotto@hotmail.com,RECÉM CHEGADOS
+10/06/2026 18:06:28,Edinea Arcanjohosken,edineaarcanjohosken@gmail.com,RECÉM CHEGADOS
+10/06/2026 18:06:42,Zenaide Delgado Gussao,zenaidegussao@gmail.com,RECÉM CHEGADOS
+10/06/2026 20:07:30,Adry Santos,adry@canaldojoel.com,INTERMEDIÁRIO
+10/06/2026 20:07:56,Adelia Teixeira Alcantara,adeliateix@yahoo.com.br,INTERMEDIÁRIO
+10/06/2026 20:08:00,bel pocai,belpocai@gmail.com,INTERMEDIÁRIO
+10/06/2026 20:08:19,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,INTERMEDIÁRIO
+11/06/2026 11:08:58,bel pocai,belpocai@gmail.com,INTERMEDIÁRIO
+11/06/2026 11:09:08,Vanessa Salles,4vsalles@gmail.com,INTERMEDIÁRIO
+11/06/2026 11:09:17,Ligia Monteiro Albertini Ayach,ligiaayach@gmail.com,INTERMEDIÁRIO
+11/06/2026 11:09:20,Maria de Fatima de Araujo,fatinhaitu@gmail.com,INTERMEDIÁRIO
+11/06/2026 11:09:21,Rosalina Soares,soar.rosa@yahoo.com.br,INTERMEDIÁRIO
+11/06/2026 11:09:25,Delza Helena Brum,ddelzahb@gmail.com,INTERMEDIÁRIO
+11/06/2026 11:09:31,Marize Lippi,marizelippi@uol.com.br,INTERMEDIÁRIO
+11/06/2026 11:09:45,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,INTERMEDIÁRIO
+11/06/2026 11:10:45,Maria de Lourdes Duarte Avelar,lourdinhavelar@gmail.com,INTERMEDIÁRIO
+11/06/2026 17:23:33,Adry Santos,adry@canaldojoel.com,RECÉM CHEGADOS
+11/06/2026 17:23:44,Flavia de Camargo Henrique de Sousa,fchenrique@gmail.com,RECÉM CHEGADOS
+11/06/2026 17:23:44,Priscila Teixeira Duarte Medeiros,pri.tdmedeiros@gmail.com,RECÉM CHEGADOS
+11/06/2026 17:23:50,Wania Nobrega Sanches,wns6379@gmail.com,RECÉM CHEGADOS
+11/06/2026 17:24:04,Josete Boff Dalmagro,joseteboffdalmagro211280@gmail.com,RECÉM CHEGADOS
+11/06/2026 17:24:28,Vanessa Oliveira,simplesmentessencial@gmail.com,RECÉM CHEGADOS
+11/06/2026 19:05:25,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,AVANÇADO
+11/06/2026 19:05:50,Adry Santos,adry@canaldojoel.com,AVANÇADO`;
+
+let ALL={labs:[],arenas:[],students:[],mentorados:[]}, chartRefs={};
+let apiUrl='https://script.google.com/macros/s/AKfycbyEQhJiNKeSS_TThxiv-9x6LNjJRjQ7j8OW8_azk8cUXDOAz8K120laxxr7hZDv7jIw/exec';
+let MENTORIA_SET=new Set();
+
+const SB_URL='https://ufjrkhunbomtkgqqethc.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmanJraHVuYm9tdGtncXFldGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDY2NTMsImV4cCI6MjA5NzEyMjY1M30.2L1D_mjP1zzm5zO1edzpeeSLM21aCqaGGPyInIzBcjw';
+
+async function fetchSupabase(table){
+  const res=await fetch(`${SB_URL}/rest/v1/${table}?select=*&limit=10000`,{
+    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'}
+  });
+  if(!res.ok)throw new Error(`Supabase erro ${res.status} em ${table}`);
+  return res.json();
+}
+
+async function loadFromSupabase(){
+  const [labs,arenas,men]=await Promise.all([
+    fetchSupabase('fluent_labs'),
+    fetchSupabase('arenas'),
+    fetchSupabase('mentorados')
+  ]);
+  ALL.labs=labs.map(r=>({ts:r.ts||'',name:r.name||'',email:normE(r.email||''),date:parseBRDate(r.ts||'')})).filter(r=>r.email);
+  ALL.arenas=arenas.map(r=>({ts:r.ts||'',name:r.name||'',email:normE(r.email||''),nivel:(r.nivel||'').toUpperCase(),date:parseBRDate(r.ts||'')})).filter(r=>r.email);
+  ALL.mentorados=men.map(r=>({name:r.name||'',email:normE(r.email||''),status:r.status||''})).filter(r=>r.email);
+  buildMentoriaSet(ALL.mentorados);
+  ALL.students=merge(ALL.labs,ALL.arenas);
+  rebuild();
+}
+
+const RAW_MENTORADOS=`Ademir,junior@imperiocontabilidade.com.br,60 DIAS P/ EXPIRAR
+Adriana Costa dos Santos,adry@canaldojoel.com,ATIVO
+Adriana Daniela Julio e Oliveira Belintani,adrianabelintani@belintani.adv.br,ATIVO
+Adriana Kuwaye,drix@uol.com.br,ATIVO
+Adriana Valente Rosselli,adriana.rosselli@gmail.com,ATIVO
+Adriane Lopes,adriane1lopes@hotmail.com,ATIVO
+Agatha Maris Tortoza dos Passos,agatha.tortoza@gmail.com,ATIVO
+Alba,arpbarroso@hotmail.com,ATIVO
+Alessa Ronconi,alessa.ronconi20@gmail.com,ATIVO
+Alessandra Septimo Lanza,alesandrah126@gmail.com,ATIVO
+Alice Dadoorian,alice.dadoorian@gmail.com,ATIVO
+Alice Juliana Silveira Alvial,alicealvial@gmail.com,ATIVO
+Aliete Adeli Otta Rui,ottarui@gmail.com,ATIVO
+Aline Angelica Ferreira da Silva,alineangelica@gmail.com,ATIVO
+Aline Bechtlufft Medeiros Prado,aline@projetarviagens.com.br,ATIVO
+Aline Lorenzon do Nascimento,nascimenttooalinee@gmail.com,30 DIAS P/ EXPIRAR
+Aliny Luiz Virginio Nobre,a.virginio@icloud.com,ATIVO
+Amanda Miguel de Lima,amandamigueldelima8@gmail.com,ATIVO
+Ana Claudia Miranda Lopes Assis,ackreu@gmail.com,ATIVO
+Ana Cristina da Silva Martins Feliciano,ana.mar.feliciano@gmail.com,ATIVO
+Ana Cristina T B Mateus,ctbmana1@gmail.com,ATIVO
+Ana Fernanda Simoes,afernandasimoes@gmail.com,ATIVO
+Ana Lucia Rodrigues Peixoto,anaaquatica@terra.com.br,ATIVO
+Ana Paula Fernandes Bastos,anafbastos79@gmail.com,ATIVO
+Ana Paula Silva Prazeres Fontes,apsprazeres0@gmail.com,60 DIAS P/ EXPIRAR
+Andrea Kimmeigs,andreakimmeigs@gmail.com,ATIVO
+Andrea Prezotto,prezotto.andrea@gmail.com,ATIVO
+Andreia Cristina dos Santos Pereira,andreia@tzrental.com.br,ATIVO
+Andreia Frias,acf34@hotmail.com,ATIVO
+Andreza Damasceno Firmiano,andynha.daf@hotmail.com,ATIVO
+Ane Claudia Cardoso de Oliveira,aneclaudiaoliveira@gmail.com,ATIVO
+Arlene da Silva Souza,souzaarlene13@gmail.com,ATIVO
+Artur Geraldo Barreto Sales,artursales@uol.com.br,EXPIRADO
+Bianca Carvalho Leao,bcarvalho20@yahoo.com.br,ATIVO
+Bianca Mattos Vieira Machado,bianca.mvmachado@yahoo.com.br,ATIVO
+Bruna Vital da Silva,vitalbruna21@gmail.com,ATIVO
+Camila Fernandes Martins,eu.camilafmartins@gmail.com,ATIVO
+Carmem M Pinheiro,contato@carmenpinheiro.com.br,ATIVO
+Carmen Cristiane de Souza Balieiro,ccsbalieiro@gmail.com,ATIVO
+Carmen Lucia Addor Gomes de Castro,carmenlucastro@gmail.com,60 DIAS P/ EXPIRAR
+Catia Pires Valente,catia.valente@climatempo.com.br,ATIVO
+Celia Maria da Silva Oliveira,celia.silvaoliveira@yahoo.com.br,30 DIAS P/ EXPIRAR
+Cenilda Maria Mazzucco,cenildam@gmail.com,ATIVO
+Cibele Piatto Caires,cipiatto@gmail.com,60 DIAS P/ EXPIRAR
+Cilmara de Oliveira,cilmara.deoliveira@gmail.com,ATIVO
+Cintia Vieira,cihcihvieira@gmail.com,EXPIRADO
+Claudia Cancado Ferreira Gontijo,cfgontijo.cg@gmail.com,ATIVO
+Claudia Carvalho Borges Carbonari,claucarbonari@gmail.com,ATIVO
+Claudia de Carvalho,claudiacarvalho.adv@gmail.com,ATIVO
+Claudia Garcia Surita,csurita@gmail.com,ATIVO
+Claudia Lucia dos Santos,claudia1969social@gmail.com,ATIVO
+Claudia Marcia Daher,claudiam.daher@gmail.com,ATIVO
+Claudia Weyne Parente Ribeiro,claudiaweyne12@gmail.com,ATIVO
+Cleide SantAnna,cleidesantanna10@gmail.com,ATIVO
+Cristiane Pasqualino,criiisss@gmail.com,60 DIAS P/ EXPIRAR
+Cristina das Neves Mariano,cris.nmariano@gmail.com,ATIVO
+Cristina Ferrari Benthien,dracristinaferrari@hotmail.com,ATIVO
+Dagma Rosa,dagmagoncalvesrosa@gmail.com,ATIVO
+Daliana Lavrini Florindo,lavrini.dali@gmail.com,ATIVO
+Daniela Aparecida Marques,daniela@grupolacerda.com.br,ATIVO
+Daniela Caldas,danicaldas2004@hotmail.com,ATIVO
+Daniela Ines Pagel Dorigon,daniela.dorigon@gmail.com,ATIVO
+Daniella Giampaoli,danigpaoli@gmail.com,ATIVO
+Debora de Albuquerque Alvarenga Miranda,deboralvarenga@hotmail.com,ATIVO
+Deise Sueli de Pietro Caputo,deisecaputo@hotmail.com,ATIVO
+Deisymar,deisymardcc@gmail.com,60 DIAS P/ EXPIRAR
+Delza Helena Brum,delzahb@gmail.com,EXPIRADO
+Denise Ferreira,denisef.06@gmail.com,ATIVO
+Dina Lourdes Fernandez Frutuoso,dina7frutuoso@gmail.com,ATIVO
+Dirce Aparecida Valerio da Fonseca,dirceavalerio@gmail.com,ATIVO
+Dirlene Patrocinio Lobo,dirlenepo@yahoo.com,ATIVO
+Dorotea Barea,doroteabarea@gmail.com,ATIVO
+Douglas Jurkovic,douglas.jurkovic@outlook.com,ATIVO
+Douglas Soster,douglassoster@yahoo.com.br,ATIVO
+Dulce Maria Paiva Fernandes,dulcemaria.paivafernandes@gmail.com,ATIVO
+Ederly Aparecida de Andrade,ederlyandrade@gmail.com,ATIVO
+Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,ATIVO
+Edinea Arcanjo Hosken,edineaarcanjohosken@gmail.com,ATIVO
+Edith Maria Girardi,emcgirardi@gmail.com,ATIVO
+Elaine Monteiro,monteirofelaine@hotmail.com,ATIVO
+Elenith Almeida,elenithja@gmail.com,ATIVO
+Eliana Luiza,elianaluiza@hotmail.com,ATIVO
+Eliane Ap Brito de Araujo,elianebaraujo2@gmail.com,ATIVO
+Eliane Balestrin,elianetbalestrin@gmail.com,ATIVO
+Elizangela Santos,elizangeladss@hotmail.com,ATIVO
+Elke Ferreira de Rezende Cacador,elke@nsra.com.br,ATIVO
+Eloisa Faria Goncalves,elofariagoncalves@gmail.com,ATIVO
+Erica De Marco Fonseca Lommez,ericademarcof@hotmail.com,ATIVO
+Eva Zorzetti,evazorzetti@gmail.com,ATIVO
+Evangelina Reis Salgado,evangelinareis9@gmail.com,ATIVO
+Everton Moura,everton.moura@gmail.com,ATIVO
+Fabiana Lima Cordeiro,limacord@gmail.com,ATIVO
+Fabio Alexandre Pareja Gomes,pareja.fabio@gmail.com,60 DIAS P/ EXPIRAR
+Fabricio Braz,brazfabricio10@gmail.com,ATIVO
+Fatima Regina Pereira Alves,fatima_alves13@hotmail.com,ATIVO
+Fernanda Colletti,fernanda@fernandacolletti.com.br,ATIVO
+Gileide Domingues Holder,gileideholder@gmail.com,ATIVO
+Giovana Bessa,casilogb@gmail.com,ATIVO
+Glaucia Penido,glauciagpenido@hotmail.com,ATIVO
+Gleiciane Araujo Morais Vasconcellos,gleicianevasconcellos@hotmail.com,ATIVO
+Graziela Gasser Salvatore,grazielasalvatore@gmail.com,ATIVO
+Guilherme Rechi Guimaraes,guilhermerechiguimaraes@gmail.com,ATIVO
+Hedilene Freire Caseca Rosa,hedilenecaseca@gmail.com,EXPIRADO
+Helia Therezinha dos Santos Silva,helia29santos@hotmail.com,ATIVO
+Herika Cristina Banyan de Vargas,hbanyan@gmail.com,ATIVO
+Ivanilda Inez Nogueira,ivanilda@grupouniaosjc.com.br,ATIVO
+Izabella Barboza,izabellabarboza@gmail.com,60 DIAS P/ EXPIRAR
+Jacqueline Nassif,jacnasantunes@hotmail.com,ATIVO
+Jane Mara Spessatto,jane_spessatto@hotmail.com,ATIVO
+Jaqueline Rocha de Paiva,jaquelinepaiva1963@gmail.com,ATIVO
+Josenice R B Mayer,jorbmayer@gmail.com,ATIVO
+Josete Boff Dalmagro,joseteboffdalmagro211280@gmail.com,ATIVO
+Juliana Lira Borin Louzada,juliana.borin@hotmail.com,ATIVO
+Julianna Morandi,juliannamorandi.jm@gmail.com,ATIVO
+Jussara Ferreira Simonetti,jussarasimonetti@yahoo.com.br,ATIVO
+Karin Weber de Freitas Correa,karinwfcorrea@gmail.com,ATIVO
+Karita Carneiro,karitacarneiropereira@gmail.com,ATIVO
+Kelen Ezequiel,kelinha.ezequiel@hotmail.com,ATIVO
+Kelia,kelia@neuronios.com.br,ATIVO
+Kelly Glauci Gama Carneiro,kellyglauce@yahoo.com.br,ATIVO
+Ketrim Regina Souza,admketrim@gmail.com,ATIVO
+Leiliane Matias Santana,santanaleili@gmail.com,ATIVO
+Lethicia Costa,lethiciacostapft@gmail.com,ATIVO
+Ligia Monteiro Albertini Ayach,ligiaayach@gmail.com,ATIVO
+Lina Maria F V Galvao,linamariagalvao73@gmail.com,ATIVO
+Livia Bongiorni,likabongiorni@gmail.com,ATIVO
+Luciana Crivelin,llcrivelin@hotmail.com,ATIVO
+Luciana da Silva Braga,luzbraga8@gmail.com,30 DIAS P/ EXPIRAR
+Luciana Siqueira Reis Cibreiros,lucibreiros@gmail.com,ATIVO
+Luciane Cristina Antunes Werner,antunesluciane74@gmail.com,ATIVO
+Lucio Magno Vieira Andrade,luciomagnobh@gmail.com,60 DIAS P/ EXPIRAR
+Luisa A B Mura Gabriel,luisa.mura@pfizer.com,ATIVO
+Marcelle Faria Marques Costa,marcellefama@hotmail.com,ATIVO
+Marcelo Lima,marcelo.abb.br@gmail.com,EXPIRADO
+Marcelo Martins da Silva,omarceloms@hotmail.com,ATIVO
+Maria Amelia Stefanuto Zihlmann Pinho,mariaameliasz@hotmail.com,ATIVO
+Maria Angela Lavezzo dos Santos,ls.mariaangela@gmail.com,ATIVO
+Maria Angelica de Moraes,m.angelicademoraes@gmail.com,ATIVO
+Maria Antonia de Castro Carneiro,mariantoniacarneiro@gmail.com,ATIVO
+Maria Cecilia Guinle,mctguinle@hotmail.com,ATIVO
+Maria Cristina Borges Carvalho,mcbcarvalho@hotmail.com,ATIVO
+Maria de Fatima de Araujo,fatinhaitu@gmail.com,ATIVO
+Maria de Lourdes,lourdinhavelar@gmail.com,ATIVO
+Maria Isabel Luiz,mariaisaluiz@yahoo.com.br,30 DIAS P/ EXPIRAR
+Maria Isabel Pocai,belpocai@gmail.com,ATIVO
+Maria Jose Escada,mariajoseescada@gmail.com,ATIVO
+Maria Socorro Barros Lira,socorrobarroslira@gmail.com,60 DIAS P/ EXPIRAR
+Maria Valeria Pereira Agra,valeriaagra6@gmail.com,ATIVO
+Mariana Soares Peres,marianasperes@hotmail.com,EXPIRADO
+Mariangela Camali,mariangela@mcjardins.com.br,ATIVO
+Maricy Zampieri Lima Teodoro,maricy.teodoro@outlook.com,ATIVO
+Marina Florio,marinaflorio@gmail.com,ATIVO
+Marlene Gerchevski,marlene2799@hotmail.co,ATIVO
+Mercia Insardi,mercia.insardi@gmail.com,ATIVO
+Michele Bodziak Daems,michelebodziak@yahoo.com.br,ATIVO
+Michele Cabral,peritamichelecabral@gmail.com,ATIVO
+Michele R Ramos,miagro22@gmail.com,ATIVO
+Nara Rubia Castro Freitas Passinato,naracastroo@hotmail.com,ATIVO
+Nathalye Oliveira do Amaral,nathalye464@gmail.com,ATIVO
+Neiva Rosane Richter,nrichter@uol.com.br,ATIVO
+Nelma Batista Pereira,nelmaenilson@hotmail.com,ATIVO
+Nelson,nelson@nnogueiraadvocacia.adv.br,60 DIAS P/ EXPIRAR
+Nidia Simoes Freitas,nidia.simoesfreitas@gmail.com,ATIVO
+Nidia Solange Pereira,nidia.solange@gmail.com,ATIVO
+Nivia,nivinha_cecilia@hotmail.com,ATIVO
+Nivia Moreira Matta,nivia.matta@gmail.com,ATIVO
+Patricia Guimaraes,patyguim2101@gmail.com,ATIVO
+Patricia Menon Fernandes,patmenon@hotmail.com,ATIVO
+Patricia O. Christofaro Michaeli,poliveirarj@gmail.com,ATIVO
+Patricia Oliveira Schneider da Rosa,schneider_bio@hotmail.com,ATIVO
+Patricia Pinheiro Colares,patriciacolares41@gmail.com,60 DIAS P/ EXPIRAR
+Paula Aiello Gazoni Gregorio,paulagazoni21@hotmail.com,60 DIAS P/ EXPIRAR
+Paula de Carvalho Albuquerque,paula.carvalho.albuquerque@gmail.com,ATIVO
+Paula Pacheco Lins,paulapachecolins@gmail.com,ATIVO
+Priscila dos Santos Smith Pereira,priscilassmith@gmail.com,ATIVO
+Priscila Roberta P B Duarte,priscilapbduarte@gmail.com,ATIVO
+Priscila Teixeira Duarte Medeiros,priscila.teixeiraduarte@gmail.com,60 DIAS P/ EXPIRAR
+Raimunda Telma de Macedo Santos,telmacedo@uol.com.br,60 DIAS P/ EXPIRAR
+Regina Lucia de Amorim,regina.psicologia50@gmail.com,ATIVO
+Renata Cristina Tornelli Tassetano da Assumpcao,re_tassetano@hotmail.com,ATIVO
+Renata Silva,renatinhaenick@hotmail.com,ATIVO
+Rita Aparecida Madeira Arnoni,ritamarnoni@gmail.com,ATIVO
+Rogerio de Castro Angelo,capc.angelo@hotmail.com,EXPIRADO
+Rosana V Velucci,rosanavelucci@gmail.com,ATIVO
+Rosangela Albuquerque Barbero,rosangela.barbero@outlook.com,ATIVO
+Rosaura Christmann,rosaurachristmann@gmail.com,AGUARDANDO
+Rosiane Ramos Pereira Straiotto,rosianestraiotto@hotmail.com,ATIVO
+Rosilene Rodrigues da Silva Gaspar de Souza,rosilene.rodrigues@virtusfinancial.com.br,ATIVO
+Samantha Andrade Maia,samanthaamaia2@hotmail.com,ATIVO
+Sandra Maria Rezende de Moraes,moraessandra1953@gmail.com,60 DIAS P/ EXPIRAR
+Sandra Maria Vaz Dias,sandradias12@gmail.com,ATIVO
+Sandra Regina Viana,sandra.viana34@gmail.com,ATIVO
+Sandra Rodrigues,sandra@clinionco.com.br,ATIVO
+Sara Rodrigues Viegas,sararviegas@gmail.com,EXPIRADO
+Selmir Monteiro de Oliveira,selmir.monteiro@gmail.com,ATIVO
+Sergio H Cardoso,sergioshc@proxdobrasil.com.br,ATIVO
+Sheila Fideles Ceglio,sheilaceglio@yahoo.com.br,ATIVO
+Shirlei P Mile Alves,shirlei.mile@gmail.com,ATIVO
+Silvia Berezin,silvia.berezin@gmail.com,ATIVO
+Silvia Cohn,silvia.frotadeandrade@gmail.com,ATIVO
+Silvia Maria da Silva,nutrisil2012@gmail.com,ATIVO
+Simone Braga,sissibraga@yahoo.com,ATIVO
+Simone dos Santos,simone.santosck@gmail.com,ATIVO
+Solange Gomes,solange.macedogomes77@gmail.com,ATIVO
+Sonia de Fatima Viana d'avila,soniafvdavila@gmail.com,ATIVO
+Sonia Maria Goes Costa,sonia-gcosta@uol.com.br,ATIVO
+Sonia Pereira Martins,florestec@florestec.ind.br,ATIVO
+Soraia A Almeida,soraia.cainelles@gmail.com,ATIVO
+Stela Cignachi,stelacig@gmail.com,ATIVO
+Sueli Hobi Duarte Volaco,suvolaco@gmail.com,ATIVO
+Suhiana Kill,suhianakill@icloud.com,ATIVO
+Suzie Aparecida Pucillo Zanatta,suziepucilloadvogada@gmail.com,ATIVO
+Tamara Lapa,tamara.lapa@hotmail.com,ATIVO
+Tamires de Matos,tamires.tmatos@gmail.com,ATIVO
+Tania Martins,tukarte@terra.com.br,ATIVO
+Tatiana de Araujo,tatianaraujo.cosmetic2011@gmail.com,ATIVO
+Tatiana De Paula Oliveira,tatidepaula@gmail.com,ATIVO
+Tatiana Rodrigues,tatianarnv8@gmail.com,ATIVO
+Tatiana Torrecilha,tatiana.torrecilha@gmail.com,ATIVO
+Teresa Cristina Matos Ferreira,te.cris2@hotmail.com,30 DIAS P/ EXPIRAR
+Valdeni Alves de Noronha,valdeni_noronha@yahoo.com.br,ATIVO
+Vaneli Cristine Silva de Mattos,vanelicristine@hotmail.com,ATIVO
+Vanessa Derlam,vanessaderlam@gmail.com,ATIVO
+Vanessa Madrona Moreira Salles,4vsalles@gmail.com,ATIVO
+Vanessa Neves de Souza,vanessa_nevess@terra.com.br,ATIVO
+Vanessa Rainho,vanessa@lvreventos.com.br,ATIVO
+Vania Labres da Silva,vania@planej-rnc.com.br,ATIVO
+Veruska Monica Timbo de Lima,veruska.monica@gmail.com,ATIVO
+Virginia Lara Silva Lucas,virginialslucas@gmail.com,30 DIAS P/ EXPIRAR
+Wania Nobrega Sanches,wns6379@gmail.com,ATIVO
+Zaida Jose dos Santos,zaida@uai.com.br,ATIVO`;
+
+const normE=s=>(s||'').toLowerCase().trim().replace(/\s+/g,'');
+const normN=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+const TC=s=>(s||'').replace(/\b\w/g,c=>c.toUpperCase());
+const initials=n=>{const p=(n||'').trim().split(/\s+/);return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():((n||'').substring(0,2).toUpperCase())||'?'};
+const isMen=e=>MENTORIA_SET.has(normE(e));
+
+function parseBRDate(s){
+  if(!s)return null;
+  const str=s.toString().trim();
+  // Formato BR: "15/06/2026 07:30:00"
+  if(/^\d{2}\/\d{2}\/\d{4}/.test(str)){
+    const[d,t]=(str).split(' ');
+    const p=d.split('/');
+    return new Date(+p[2],+p[1]-1,+p[0],+((t||'00:00').split(':')[0]),+((t||'00:00').split(':')[1]));
+  }
+  // Formato ISO / Mon Jun 15 2026... (vindo do Supabase via Apps Script)
+  const d=new Date(str);
+  return isNaN(d)?null:d;
+}
+function parseRows(raw,hasNivel){
+  return raw.trim().split('\n').filter(l=>l.trim()).map(l=>{
+    const p=l.split(',');
+    const r={ts:(p[0]||'').trim(),name:(p[1]||'').trim(),email:normE(p[2]||''),date:parseBRDate((p[0]||'').trim())};
+    if(hasNivel)r.nivel=(p[3]||'').trim().toUpperCase();
+    return r;
+  }).filter(r=>r.email&&r.email.includes('@'));
+}
+function parseMentoradosAPI(raw){
+  return raw.trim().split('\n').filter(l=>l.trim()).map(line=>{
+    const parts=line.split(',');
+    const name=(parts[1]||'').trim();
+    const emailPart=parts.find((p,i)=>i>=2&&p.trim().includes('@'));
+    const email=normE(emailPart||'');
+    const statusKeywords=['ATIVO','EXPIRADO','DIAS P/','AGUARDANDO'];
+    const statusPart=parts.find(p=>statusKeywords.some(k=>p.trim().toUpperCase().includes(k)));
+    return{name,email,status:(statusPart||'').trim()};
+  }).filter(r=>r.name&&r.email&&r.email.includes('@'));
+}
+function parseMentoradosLocal(raw){
+  return raw.trim().split('\n').filter(l=>l.trim()).map(l=>{
+    const p=l.split(',');
+    return{name:(p[0]||'').trim(),email:normE(p[1]||''),status:(p[2]||'').trim()};
+  }).filter(r=>r.email&&r.email.includes('@'));
+}
+function buildMentoriaSet(men){MENTORIA_SET=new Set(men.map(m=>m.email))}
+
+function merge(labs,arenas){
+  const map={};
+  labs.forEach(r=>{if(!map[r.email])map[r.email]={name:r.name,email:r.email,labs:0,arenas:0,niveis:{},labTs:[],arenaTs:[],isMentoria:isMen(r.email)};map[r.email].labs++;map[r.email].labTs.push(r);});
+  arenas.forEach(r=>{if(!map[r.email])map[r.email]={name:r.name,email:r.email,labs:0,arenas:0,niveis:{},labTs:[],arenaTs:[],isMentoria:isMen(r.email)};map[r.email].arenas++;map[r.email].arenaTs.push(r);if(r.nivel)map[r.email].niveis[r.nivel]=(map[r.email].niveis[r.nivel]||0)+1;});
+  return Object.values(map).map(s=>({...s,total:s.labs+s.arenas})).sort((a,b)=>b.total-a.total);
+}
+
+function nivelBadge(n){const cls={AVANÇADO:'b-av',INTERMEDIÁRIO:'b-int',BÁSICO:'b-bas','RECÉM CHEGADOS':'b-rec'}[n]||'b-bas';return`<span class="badge ${cls}">${n||'—'}</span>`}
+function statusBadge(s){
+  if(!s)return'';
+  if(s==='ATIVO')return`<span class="badge b-ativo">ATIVO</span>`;
+  if(s==='EXPIRADO')return`<span class="badge b-exp">EXPIRADO</span>`;
+  if(s.includes('60'))return`<span class="badge b-60">60 DIAS</span>`;
+  if(s.includes('30'))return`<span class="badge b-30">30 DIAS</span>`;
+  return`<span class="badge">${s}</span>`;
+}
+
+/* ── WEEK UTILS ── */
+function getWeekStart(d){const t=new Date(d);t.setHours(0,0,0,0);t.setDate(t.getDate()-t.getDay());return t}
+function weekKey(d){return getWeekStart(d).toLocaleDateString('pt-BR')}
+function sortDates(dates){return dates.sort((a,b)=>{const f=s=>s.split('/');const pa=f(a),pb=f(b);return new Date(+pa[2],+pa[1]-1,+pa[0])-new Date(+pb[2],+pb[1]-1,+pb[0])})}
+
+/* ── CHART UTILS ── */
+function destroyChart(id){if(chartRefs[id]){try{chartRefs[id].destroy()}catch(e){}delete chartRefs[id]}}
+function mkChart(id,type,data,options){
+  destroyChart(id);const ctx=document.getElementById(id);if(!ctx)return;
+  chartRefs[id]=new Chart(ctx,{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#4a5a7a',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},y:{ticks:{color:'#4a5a7a',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'}}}, ...options}});
+}
+
+/* ── FILTERS ── */
+function mkFilters(pfx,withNivel=false){
+  return`<div class="filters">
+    <div class="radio-group" id="${pfx}_rg">
+      ${[['all','Todos'],['today','Hoje'],['week','7 dias'],['month','30 dias'],['custom','Período']].map(([v,l],i)=>`<span class="rbtn${i===0?' sel':''}" data-val="${v}" onclick="pickPeriod('${pfx}',this)">${l}</span>`).join('')}
+    </div>
+    <input type="date" id="${pfx}_df" class="fi" style="display:none" oninput="reRender('${pfx}')">
+    <span id="${pfx}_dtl" style="display:none;color:var(--txt3);font-size:11px">até</span>
+    <input type="date" id="${pfx}_dt" class="fi" style="display:none" oninput="reRender('${pfx}')">
+    <input id="${pfx}_txt" class="fi" placeholder="Nome ou e-mail…" style="min-width:150px;margin-left:auto" oninput="reRender('${pfx}')">
+    <label class="chk-lbl"><input type="checkbox" id="${pfx}_men" onchange="reRender('${pfx}')"><span style="color:#b39ddb">Mentoria</span></label>
+    ${withNivel?`<select id="${pfx}_nv" class="fi" onchange="reRender('${pfx}')"><option value="">Todos os níveis</option><option>AVANÇADO</option><option>INTERMEDIÁRIO</option><option>BÁSICO</option><option>RECÉM CHEGADOS</option></select>`:''}
+  </div>`;
+}
+window.pickPeriod=function(pfx,el){
+  document.querySelectorAll(`#${pfx}_rg .rbtn`).forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
+  const isC=el.dataset.val==='custom';
+  ['df','dtl','dt'].forEach(id=>{const e=document.getElementById(`${pfx}_${id}`);if(e)e.style.display=isC?'':'none'});
+  reRender(pfx);
+}
+function getF(pfx){
+  const sel=document.querySelector(`#${pfx}_rg .sel`);
+  return{mode:sel?sel.dataset.val:'all',
+    custom:{from:(document.getElementById(pfx+'_df')||{value:''}).value,to:(document.getElementById(pfx+'_dt')||{value:''}).value},
+    txt:(document.getElementById(pfx+'_txt')||{value:''}).value.trim(),
+    men:(document.getElementById(pfx+'_men')||{checked:false}).checked,
+    nivel:(document.getElementById(pfx+'_nv')||{value:''}).value};
+}
+function applyDateFilter(rows,mode,custom){
+  if(mode==='all')return rows;
+  const now=new Date();
+  return rows.filter(r=>{
+    if(!r.date)return false;
+    if(mode==='today'){const t=new Date();t.setHours(0,0,0,0);return r.date>=t}
+    if(mode==='week'){const w=new Date(now);w.setDate(w.getDate()-7);return r.date>=w}
+    if(mode==='month'){const m=new Date(now);m.setMonth(m.getMonth()-1);return r.date>=m}
+    if(mode==='custom'&&custom.from&&custom.to){const f=new Date(custom.from),t=new Date(custom.to);t.setHours(23,59,59);return r.date>=f&&r.date<=t}
+    return true;
+  });
+}
+function filterRows(rows,f,withNivel=false){
+  let r=applyDateFilter(rows,f.mode,f.custom);
+  if(f.txt){const q=normN(f.txt);r=r.filter(x=>normN(x.name).includes(q)||x.email.includes(q))}
+  if(f.men)r=r.filter(x=>isMen(x.email));
+  if(withNivel&&f.nivel)r=r.filter(x=>x.nivel===f.nivel);
+  return r;
+}
+
+/* ── METRICS ── */
+function renderMetrics(){
+  const s=ALL.students,labs=ALL.labs,arenas=ALL.arenas;
+  const uLab=new Set(labs.map(r=>r.email)).size;
+  const uArena=new Set(arenas.map(r=>r.email)).size;
+  const men=ALL.mentorados.length;
+  document.getElementById('metrics').innerHTML=`
+    <div class="mcard cp glow-p"><div class="lbl">Alunos únicos</div><div class="val">${s.length}</div><div class="sub">Fluent Mind Academy</div></div>
+    <div class="mcard cm"><div class="lbl">Mentorados</div><div class="val" style="color:#b39ddb">${men}</div><div class="sub">na planilha</div></div>
+    <div class="mcard cc glow-c"><div class="lbl">Presenças Labs</div><div class="val" style="color:var(--acc2)">${labs.length}</div><div class="sub">${uLab} alunos únicos</div></div>
+    <div class="mcard co"><div class="lbl">Presenças Arenas</div><div class="val" style="color:var(--acc3)">${arenas.length}</div><div class="sub">${uArena} alunos únicos</div></div>
+    <div class="mcard cg"><div class="lbl">Total de presenças</div><div class="val" style="color:var(--acc4)">${labs.length+arenas.length}</div><div class="sub">Labs + Arenas</div></div>`;
+}
+
+/* ── GERAL ── */
+function renderGeral(){
+  const labs=ALL.labs,arenas=ALL.arenas,students=ALL.students;
+  const byDateL={},byDateA={};
+  labs.forEach(r=>{const d=r.ts.split(' ')[0];byDateL[d]=(byDateL[d]||0)+1});
+  arenas.forEach(r=>{const d=r.ts.split(' ')[0];byDateA[d]=(byDateA[d]||0)+1});
+  const allDates=sortDates([...new Set([...Object.keys(byDateL),...Object.keys(byDateA)])]);
+  const nivelCounts={};arenas.forEach(r=>{if(r.nivel)nivelCounts[r.nivel]=(nivelCounts[r.nivel]||0)+1});
+  const top5=students.slice(0,5);
+  document.getElementById('pgeral').innerHTML=`
+    <div class="two-col" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">📈 Presenças por dia</span><span class="card-sub">${labs.length+arenas.length} total</span></div>
+        <div style="position:relative;height:200px"><canvas id="chartGeralLine"></canvas></div>
+        <div style="display:flex;gap:14px;margin-top:10px;font-size:11px">
+          <span><span class="dot" style="background:var(--acc)"></span><span style="color:var(--txt2)">Labs</span></span>
+          <span><span class="dot" style="background:var(--acc3)"></span><span style="color:var(--txt2)">Arenas</span></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">🎯 Arenas por nível</span></div>
+        <div style="position:relative;height:200px"><canvas id="chartNivelDoughnut"></canvas></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-hdr"><span class="card-title">🏆 Top 5 alunos</span><span class="card-sub">geral</span></div>
+      <table><thead><tr><th>#</th><th>Aluno</th><th>Total</th><th style="text-align:right">Labs</th><th style="text-align:right">Arenas</th></tr></thead>
+      <tbody>${top5.map((s,i)=>`<tr class="${s.isMentoria?'men-row':''}">
+        <td><span class="rank-num">${i+1}</span></td>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar ${s.isMentoria?'av-p':'av-c'}">${initials(s.name)}</div><span>${TC(s.name)}</span>${s.isMentoria?'<span class="badge b-men">M</span>':''}</div></td>
+        <td><span style="font-weight:700;color:#fff">${s.total}</span></td>
+        <td style="text-align:right;color:var(--acc)">${s.labs}</td>
+        <td style="text-align:right;color:var(--acc3)">${s.arenas}</td>
+      </tr>`).join('')}</tbody></table>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">📅 Histórico por data</span></div>
+      <table><thead><tr><th>Data</th><th style="text-align:right">Labs</th><th style="text-align:right">Arenas</th><th style="text-align:right">Total</th></tr></thead>
+      <tbody>${allDates.slice().reverse().map(d=>`<tr><td>${d}</td><td style="text-align:right;color:var(--acc)">${byDateL[d]||'—'}</td><td style="text-align:right;color:var(--acc3)">${byDateA[d]||'—'}</td><td style="text-align:right;font-weight:700;color:#fff">${(byDateL[d]||0)+(byDateA[d]||0)}</td></tr>`).join('')}</tbody></table>
+    </div>`;
+  setTimeout(()=>{
+    mkChart('chartGeralLine','bar',{
+      labels:allDates.map(d=>d.substring(0,5)),
+      datasets:[
+        {label:'Labs',data:allDates.map(d=>byDateL[d]||0),backgroundColor:'rgba(124,77,255,.7)',borderRadius:3},
+        {label:'Arenas',data:allDates.map(d=>byDateA[d]||0),backgroundColor:'rgba(255,64,129,.7)',borderRadius:3}
+      ]
+    },{scales:{x:{stacked:true,ticks:{color:'#4a5a7a',font:{size:9},maxTicksLimit:12}},y:{stacked:true,beginAtZero:true,ticks:{color:'#4a5a7a',font:{size:9}}}}});
+    const nivOrder=['AVANÇADO','INTERMEDIÁRIO','BÁSICO','RECÉM CHEGADOS'];
+    const nivColors=['rgba(105,255,71,.8)','rgba(0,229,255,.8)','rgba(255,171,64,.8)','rgba(255,64,129,.8)'];
+    destroyChart('chartNivelDoughnut');
+    const ctx2=document.getElementById('chartNivelDoughnut');if(!ctx2)return;
+    chartRefs['chartNivelDoughnut']=new Chart(ctx2,{type:'doughnut',data:{
+      labels:nivOrder,
+      datasets:[{data:nivOrder.map(n=>nivelCounts[n]||0),backgroundColor:nivColors,borderColor:'rgba(255,255,255,.05)',borderWidth:1.5,hoverOffset:6}]
+    },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'right',labels:{color:'#8899aa',font:{size:10},boxWidth:10,padding:10}}}}});
+  },80);
+}
+
+/* ── ANÁLISE ── */
+function renderAnalise(){
+  const all=[...ALL.labs,...ALL.arenas];
+  // Semanas
+  const weekMap={};
+  all.forEach(r=>{if(r.date){const wk=weekKey(r.date);if(!weekMap[wk])weekMap[wk]={lab:0,arena:0,emails:new Set()};if(r.nivel!==undefined)weekMap[wk].arena++;else weekMap[wk].lab++;weekMap[wk].emails.add(r.email);}});
+  const weeks=sortDates(Object.keys(weekMap));
+
+  // Heatmap: dia semana x hora
+  const DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const hmData={};
+  for(let h=6;h<=22;h++)for(let d=0;d<7;d++){hmData[`${h}_${d}`]=0}
+  all.forEach(r=>{if(r.date){const h=r.date.getHours();const d=r.date.getDay();if(h>=6&&h<=22)hmData[`${h}_${d}`]=(hmData[`${h}_${d}`]||0)+1;}});
+  const hmMax=Math.max(...Object.values(hmData),1);
+
+  // Horarios populares
+  const hourMap={};
+  all.forEach(r=>{if(r.date){const h=r.date.getHours();hourMap[h]=(hourMap[h]||0)+1;}});
+  const hoursSorted=Object.entries(hourMap).sort((a,b)=>b[1]-a[1]);
+
+  // Alunos sumidos (não aparecem nos últimos 14 dias)
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-14);
+  const recentEmails=new Set(all.filter(r=>r.date&&r.date>=cutoff).map(r=>r.email));
+  const allEmails=new Set(all.map(r=>r.email));
+  const sumidos=[...allEmails].filter(e=>!recentEmails.has(e));
+  const sumidosData=sumidos.map(e=>{
+    const rows=all.filter(r=>r.email===e);
+    const lastDate=rows.reduce((mx,r)=>r.date&&r.date>mx?r.date:mx,new Date(0));
+    return{name:TC(rows[0]?.name||e),email:e,lastDate,isMen:isMen(e)};
+  }).sort((a,b)=>b.lastDate-a.lastDate);
+
+  // Frequência perfeita (todas as semanas)
+  const totalWeeks=weeks.length;
+  const perStudentWeeks={};
+  all.forEach(r=>{if(r.date){const wk=weekKey(r.date);if(!perStudentWeeks[r.email])perStudentWeeks[r.email]={name:r.name,weeks:new Set()};perStudentWeeks[r.email].weeks.add(wk);}});
+  const perfeitos=Object.values(perStudentWeeks).filter(s=>s.weeks.size===totalWeeks);
+
+  // Média por sessão
+  const sessoes={};
+  all.forEach(r=>{if(r.date){const d=r.ts.split(' ')[0];sessoes[d]=(sessoes[d]||0)+1;}});
+  const media=Object.values(sessoes).length?Math.round(Object.values(sessoes).reduce((a,b)=>a+b,0)/Object.values(sessoes).length):0;
+
+  document.getElementById('panalise').innerHTML=`
+    <!-- KPIs -->
+    <div class="three-col" style="margin-bottom:16px">
+      <div class="card" style="text-align:center">
+        <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Média por sessão</div>
+        <div style="font-size:32px;font-weight:700;color:var(--acc2)">${media}</div>
+        <div style="font-size:10px;color:var(--txt3)">presenças/dia</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Frequência perfeita</div>
+        <div style="font-size:32px;font-weight:700;color:var(--acc4)">${perfeitos.length}</div>
+        <div style="font-size:10px;color:var(--txt3)">alunos em todas as semanas</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Sumidos (+14 dias)</div>
+        <div style="font-size:32px;font-weight:700;color:var(--acc3)">${sumidos.length}</div>
+        <div style="font-size:10px;color:var(--txt3)">sem presença recente</div>
+      </div>
+    </div>
+
+    <!-- Comparativo semanal -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-hdr"><span class="card-title">📅 Comparativo semanal — Labs vs Arenas</span><span class="card-sub">${weeks.length} semanas</span></div>
+      <div style="position:relative;height:220px"><canvas id="chartSemanas"></canvas></div>
+      <div style="display:flex;gap:16px;margin-top:10px;font-size:11px">
+        <span><span class="dot" style="background:var(--acc)"></span><span style="color:var(--txt2)">Labs</span></span>
+        <span><span class="dot" style="background:var(--acc3)"></span><span style="color:var(--txt2)">Arenas</span></span>
+        <span><span class="dot" style="background:var(--acc2)"></span><span style="color:var(--txt2)">Únicos</span></span>
+      </div>
+    </div>
+
+    <!-- Heatmap -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-hdr"><span class="card-title">🔥 Mapa de calor — Dia × Horário</span><span class="card-sub">intensidade de presença</span></div>
+      <div style="overflow-x:auto">
+        <div class="heatmap" style="min-width:420px">
+          <div class="hm-label"></div>
+          ${DAYS.map(d=>`<div class="hm-label" style="font-weight:600;color:var(--txt2)">${d}</div>`).join('')}
+          ${Array.from({length:17},(_,i)=>i+6).map(h=>`
+            <div class="hm-label" style="color:var(--txt3)">${h}h</div>
+            ${Array.from({length:7},(_,d)=>{
+              const v=hmData[`${h}_${d}`]||0;
+              const pct=v/hmMax;
+              let bg,border,color;
+              if(pct===0){bg='rgba(255,255,255,.03)';border='1px solid transparent';color='var(--txt3)';}
+              else if(pct<0.35){const a=.15+pct*.5;bg=`rgba(239,68,68,${a})`;border=`1px solid rgba(239,68,68,${a*.7})`;color=pct>.15?'#fca5a5':'var(--txt3)';}
+              else if(pct<0.70){const a=.2+pct*.5;bg=`rgba(234,179,8,${a})`;border=`1px solid rgba(234,179,8,${a*.7})`;color='#fef08a';}
+              else{const a=.25+pct*.5;bg=`rgba(34,197,94,${a})`;border=`1px solid rgba(34,197,94,${a*.7})`;color='#86efac';}
+              return`<div class="hm-cell" style="background:${bg};border:${border};color:${color}" title="${DAYS[d]} ${h}h: ${v} presenças">${v||''}</div>`;
+            }).join('')}
+          `).join('')}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:12px;font-size:10px;color:var(--txt3)">
+        Escala:
+        <div style="width:16px;height:10px;border-radius:2px;background:rgba(239,68,68,.4)"></div><span>Pouco</span>
+        <div style="width:16px;height:10px;border-radius:2px;background:rgba(234,179,8,.6);margin-left:4px"></div><span>Médio</span>
+        <div style="width:16px;height:10px;border-radius:2px;background:rgba(34,197,94,.7);margin-left:4px"></div><span>Muito</span>
+        <span style="margin-left:8px">Máximo: ${hmMax}</span>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Horários mais populares -->
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">⏰ Horários mais populares</span></div>
+        ${hoursSorted.slice(0,8).map(([h,c],i)=>`<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+            <span style="color:var(--txt2)">${h}h${i===0?' <span class="badge b-ativo" style="font-size:9px">TOP</span>':''}</span>
+            <span style="font-weight:600;color:var(--acc2)">${c}</span>
+          </div>
+          <div class="pb"><div class="pbf" style="width:${Math.round(c/hoursSorted[0][1]*100)}%;background:linear-gradient(90deg,var(--acc),var(--acc2))"></div></div>
+        </div>`).join('')}
+      </div>
+
+      <!-- Alunos sumidos -->
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">🚨 Sem presença +14 dias</span><span class="badge b-exp">${sumidos.length}</span></div>
+        <div style="max-height:280px;overflow-y:auto">
+          ${sumidosData.slice(0,15).map(s=>`<div class="alert-row" style="padding:6px 8px;border-radius:6px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:7px">
+              <div class="avatar ${s.isMen?'av-p':'av-c'}" style="width:24px;height:24px;font-size:9px">${initials(s.name)}</div>
+              <span style="font-size:12px">${s.name.split(' ').slice(0,2).join(' ')}</span>
+              ${s.isMen?'<span class="badge b-men" style="font-size:9px">M</span>':''}
+            </div>
+            <span style="font-size:10px;color:var(--txt3)">${s.lastDate.getTime()>0?s.lastDate.toLocaleDateString('pt-BR'):'—'}</span>
+          </div>`).join('')||'<p style="color:var(--txt3);font-size:12px">Nenhum aluno sumido 🎉</p>'}
+        </div>
+      </div>
+    </div>
+
+    <!-- Frequência perfeita -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-hdr"><span class="card-title">✅ Frequência perfeita — presentes em todas as ${totalWeeks} semanas</span><span class="badge b-ok">${perfeitos.length}</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${perfeitos.map(s=>`<div style="background:rgba(105,255,71,.08);border:1px solid rgba(105,255,71,.2);border-radius:8px;padding:5px 10px;font-size:11px;display:flex;align-items:center;gap:6px">
+          <div class="avatar av-g" style="width:22px;height:22px;font-size:9px">${initials(s.name)}</div>
+          <span>${TC(s.name).split(' ').slice(0,2).join(' ')}</span>
+        </div>`).join('')||'<p style="color:var(--txt3);font-size:12px">Dados insuficientes para calcular.</p>'}
+      </div>
+    </div>`;
+
+  setTimeout(()=>{
+    mkChart('chartSemanas','bar',{
+      labels:weeks.map(w=>'Sem '+w.substring(0,5)),
+      datasets:[
+        {label:'Labs',data:weeks.map(w=>weekMap[w].lab),backgroundColor:'rgba(124,77,255,.7)',borderRadius:3,yAxisID:'y'},
+        {label:'Arenas',data:weeks.map(w=>weekMap[w].arena),backgroundColor:'rgba(255,64,129,.6)',borderRadius:3,yAxisID:'y'},
+        {type:'line',label:'Únicos',data:weeks.map(w=>weekMap[w].emails.size),borderColor:'rgba(0,229,255,.9)',backgroundColor:'rgba(0,229,255,.1)',tension:.4,pointRadius:4,pointBackgroundColor:'var(--acc2)',yAxisID:'y2'}
+      ]
+    },{
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{stacked:true,ticks:{color:'#4a5a7a',font:{size:9}}},
+        y:{stacked:true,beginAtZero:true,ticks:{color:'#4a5a7a',font:{size:9}},grid:{color:'rgba(255,255,255,.05)'}},
+        y2:{position:'right',beginAtZero:true,ticks:{color:'rgba(0,229,255,.6)',font:{size:9}},grid:{display:false}}
+      }
+    });
+  },80);
+}
+
+/* ── RANKING ── */
+let _rkStudents=[],_rkExp=false;
+function renderRanking(){
+  document.getElementById('pranking').innerHTML=`
+    <div class="card">
+      ${mkFilters('rk')}
+      <div id="rk_podium" style="margin-bottom:16px"></div>
+      <div class="card-hdr">
+        <span class="card-title">🏆 Top alunos</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:11px;color:var(--txt3)"><span class="dot" style="background:var(--acc)"></span>Labs <span class="dot" style="background:var(--acc3);margin-left:6px"></span>Arenas</span>
+          <button class="toggle-btn" id="rk_toggle" onclick="toggleRk()">▼ Ver todos</button>
+        </div>
+      </div>
+      <div id="rk_table"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">📊 Top 10 comparativo</span></div>
+      <div style="position:relative;height:220px"><canvas id="chartMain"></canvas></div>
+    </div>`;
+  reRender('rk');
+}
+function renderPodium(students){
+  const el=document.getElementById('rk_podium');if(!el)return;
+  const top5=students.slice(0,5);if(!top5.length){el.innerHTML='';return}
+  const cols=['#f59e0b','#94a3b8','#cd7c3a','#7c4dff','#7c4dff'];
+  const heights=[90,72,56,44,44];
+  const order=[1,0,2,3,4];
+  el.innerHTML=`<div class="podium-wrap">
+    ${order.map(idx=>{
+      const s=top5[idx];if(!s)return'';
+      const col=cols[idx];const h=heights[idx];
+      const nm=TC(s.name.split(' ').slice(0,2).join(' '));
+      return`<div class="podium-col">
+        <div style="font-size:10px;font-weight:700;color:${col}">${idx+1}º</div>
+        <div class="podium-av" style="width:36px;height:36px;font-size:12px;font-weight:700;color:${col};border-color:${col};background:${col}22">${initials(s.name)}</div>
+        <div style="font-size:10px;color:var(--txt);text-align:center;font-weight:500;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${nm}</div>
+        <div style="font-size:11px;font-weight:700;color:#fff">${s.total}</div>
+        <div class="podium-bar" style="height:${h}px;border-color:${col}44;color:${col}">
+          <span style="font-size:9px;color:${col}88">L${s.labs}·A${s.arenas}</span>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:14px 0"></div>`;
+}
+function renderRkRows(all){
+  const students=all?_rkStudents:_rkStudents.slice(0,10);
+  const max=_rkStudents[0]?_rkStudents[0].total:1;
+  const rows=students.map((s,i)=>`<tr class="${s.isMentoria?'men-row':''}">
+    <td style="width:24px"><span class="rank-num">${i+1}</span></td>
+    <td><div style="display:flex;align-items:center;gap:8px"><div class="avatar ${s.isMentoria?'av-p':i<3?'av-g':'av-c'}">${initials(s.name)}</div><span>${TC(s.name||s.email)}</span>${s.isMentoria?'<span class="badge b-men">M</span>':''}</div></td>
+    <td style="width:140px"><div class="bar-row"><div class="bar blab" style="width:${Math.round(s.labs/max*90)}px"></div><div class="bar barena" style="width:${Math.round(s.arenas/max*90)}px"></div><span style="font-size:12px;font-weight:700;color:#fff">${s.total}</span></div></td>
+    <td style="width:40px;text-align:right;color:var(--acc);font-weight:500">${s.labs}</td>
+    <td style="width:40px;text-align:right;color:var(--acc3);font-weight:500">${s.arenas}</td>
+  </tr>`).join('');
+  let el=document.getElementById('rk_list');
+  if(!el){
+    document.getElementById('rk_table').innerHTML=`<table><thead><tr><th>#</th><th>Aluno</th><th>Presenças</th><th style="text-align:right">Lab</th><th style="text-align:right">Arena</th></tr></thead><tbody id="rk_list"></tbody></table>`;
+    el=document.getElementById('rk_list');
+  }
+  el.innerHTML=rows||`<tr><td colspan="5" style="color:var(--txt3);padding:16px;text-align:center">Nenhum resultado.</td></tr>`;
+  setTimeout(()=>{
+    destroyChart('chartMain');const ctx=document.getElementById('chartMain');if(!ctx)return;
+    const t10=students.slice(0,10);
+    chartRefs['chartMain']=new Chart(ctx,{type:'bar',data:{
+      labels:t10.map(s=>TC(s.name.split(' ')[0])),
+      datasets:[{label:'Labs',data:t10.map(s=>s.labs),backgroundColor:'rgba(124,77,255,.8)',borderRadius:4},{label:'Arenas',data:t10.map(s=>s.arenas),backgroundColor:'rgba(255,64,129,.7)',borderRadius:4}]
+    },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{stacked:true,ticks:{color:'#4a5a7a',font:{size:9},autoSkip:false}},y:{stacked:true,beginAtZero:true,ticks:{stepSize:1,color:'#4a5a7a',font:{size:9}},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  },50);
+}
+window.toggleRk=function(){
+  _rkExp=!_rkExp;renderRkRows(_rkExp);
+  const btn=document.getElementById('rk_toggle');
+  if(btn)btn.innerHTML=_rkExp?'▲ Recolher':'▼ Ver todos';
+}
+
+window.reRender=function(pfx){
+  if(pfx==='rk'){
+    const f=getF('rk');let fL=filterRows(ALL.labs,f);let fA=filterRows(ALL.arenas,f);
+    let students=merge(fL,fA);
+    if(f.txt){const q=normN(f.txt);students=students.filter(s=>normN(s.name).includes(q)||s.email.includes(q))}
+    if(f.men)students=students.filter(s=>s.isMentoria);
+    _rkStudents=students;renderPodium(students);renderRkRows(_rkExp);
+    const btn=document.getElementById('rk_toggle');if(btn)btn.innerHTML=_rkExp?'▲ Recolher':'▼ Ver todos';
+  }
+  if(pfx==='lb')doLabBody(getF('lb'));
+  if(pfx==='ar')doArBody(getF('ar'));
+}
+
+/* ── LABS ── */
+function renderLabs(){document.getElementById('plabs').innerHTML=`<div class="card">${mkFilters('lb')}<div id="lb_body"></div></div>`;doLabBody(getF('lb'));}
+function doLabBody(f){
+  const rows=filterRows(ALL.labs,f);const byDate={},byS={};
+  rows.forEach(r=>{const d=r.ts.split(' ')[0];byDate[d]=(byDate[d]||0)+1;if(!byS[r.email])byS[r.email]={name:r.name,c:0,men:isMen(r.email)};byS[r.email].c++;});
+  const dates=sortDates(Object.keys(byDate)).reverse();const topS=Object.values(byS).sort((a,b)=>b.c-a.c).slice(0,15);const maxS=topS[0]?topS[0].c:1;
+  const el=document.getElementById('lb_body');if(!el)return;
+  el.innerHTML=`<div class="card-hdr" style="margin-top:4px"><span class="card-title">🧪 Fluent Labs</span><span class="card-sub">${rows.length} presenças</span></div>
+  <div class="two-col">
+    <div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Por data</div>
+      <table><thead><tr><th>Data</th><th style="text-align:right">Presenças</th></tr></thead>
+      <tbody>${dates.map(d=>`<tr><td>${d}</td><td style="text-align:right;font-weight:600;color:var(--acc)">${byDate[d]}</td></tr>`).join('')||'<tr><td colspan="2" style="color:var(--txt3);text-align:center;padding:12px">Sem dados</td></tr>'}</tbody></table>
+    </div>
+    <div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Mais frequentes</div>
+      ${topS.map((s,i)=>`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${i+1}. ${TC(s.name)} ${s.men?'<span class="badge b-men">M</span>':''}</span><span style="font-weight:600;color:var(--acc)">${s.c}</span></div><div class="pb"><div class="pbf blab" style="width:${Math.round(s.c/maxS*100)}%"></div></div></div>`).join('')||'<p style="color:var(--txt3);font-size:12px">Sem dados.</p>'}
+    </div>
+  </div>`;
+}
+
+/* ── ARENAS ── */
+function renderArenas(){document.getElementById('parenas').innerHTML=`<div class="card">${mkFilters('ar',true)}<div id="ar_body"></div></div>`;doArBody(getF('ar'));}
+function doArBody(f){
+  const rows=filterRows(ALL.arenas,f,true);const nivelCounts={},byDate={},byS={};
+  rows.forEach(r=>{if(r.nivel)nivelCounts[r.nivel]=(nivelCounts[r.nivel]||0)+1;const d=r.ts.split(' ')[0];if(!byDate[d])byDate[d]={};byDate[d][r.nivel||'?']=(byDate[d][r.nivel||'?']||0)+1;if(!byS[r.email])byS[r.email]={name:r.name,c:0,niveis:{},men:isMen(r.email)};byS[r.email].c++;if(r.nivel)byS[r.email].niveis[r.nivel]=(byS[r.email].niveis[r.nivel]||0)+1;});
+  const dates=sortDates(Object.keys(byDate)).reverse();const topS=Object.values(byS).sort((a,b)=>b.c-a.c).slice(0,15);const maxS=topS[0]?topS[0].c:1;const total=rows.length;
+  const nivOrder=['AVANÇADO','INTERMEDIÁRIO','BÁSICO','RECÉM CHEGADOS'];
+  const el=document.getElementById('ar_body');if(!el)return;
+  el.innerHTML=`<div class="card-hdr" style="margin-top:4px"><span class="card-title">💬 Arenas de Conversação</span><span class="card-sub">${total} presenças</span></div>
+  <div class="two-col">
+    <div>
+      <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Por nível</div>
+      ${nivOrder.filter(n=>nivelCounts[n]).map(n=>`<div style="margin-bottom:9px;display:flex;justify-content:space-between;align-items:center">${nivelBadge(n)}<span style="font-weight:600;color:#fff">${nivelCounts[n]} <span style="font-size:10px;color:var(--txt3)">(${Math.round(nivelCounts[n]/total*100)}%)</span></span></div>`).join('')||'<p style="color:var(--txt3);font-size:12px">Sem dados.</p>'}
+      <div style="border-top:1px solid rgba(255,255,255,.06);margin-top:10px;padding-top:10px">
+        <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Por data</div>
+        <table><thead><tr><th>Data</th><th>Turmas</th></tr></thead>
+        <tbody>${dates.map(d=>`<tr><td style="white-space:nowrap">${d}</td><td style="white-space:normal;line-height:2">${Object.entries(byDate[d]).map(([n,c])=>`${nivelBadge(n)}<span style="font-size:10px;color:var(--txt2)"> ${c}</span>`).join(' ')}</td></tr>`).join('')}</tbody></table>
+      </div>
+    </div>
+    <div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px">Mais frequentes</div>
+      ${topS.map((s,i)=>`<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${i+1}. ${TC(s.name)} ${s.men?'<span class="badge b-men">M</span>':''}</span><span style="font-weight:600;color:var(--acc3)">${s.c}</span></div><div style="font-size:10px;color:var(--txt3);margin:1px 0 2px">${Object.entries(s.niveis).map(([n,c])=>`${n.charAt(0)}(${c})`).join('·')}</div><div class="pb"><div class="pbf barena" style="width:${Math.round(s.c/maxS*100)}%"></div></div></div>`).join('')||'<p style="color:var(--txt3);font-size:12px">Sem dados.</p>'}
+    </div>
+  </div>`;
+}
+
+/* ── MENTORADOS ── */
+function renderMentorados(){
+  const men=ALL.mentorados;
+  let filterStatus='',filterTxt='';
+  function getFiltered(){
+    let r=men;
+    if(filterStatus){r=r.filter(m=>{if(filterStatus==='ATIVO')return m.status==='ATIVO';if(filterStatus==='EXPIRADO')return m.status==='EXPIRADO';if(filterStatus==='60')return m.status.includes('60');if(filterStatus==='30')return m.status.includes('30');return true;})}
+    if(filterTxt){const q=normN(filterTxt);r=r.filter(m=>normN(m.name).includes(q)||m.email.includes(q))}
+    return r;
+  }
+  const ativos=men.filter(m=>m.status==='ATIVO').length;
+  const exp=men.filter(m=>m.status==='EXPIRADO').length;
+  const d60=men.filter(m=>m.status.includes('60')).length;
+  const d30=men.filter(m=>m.status.includes('30')).length;
+  document.getElementById('pmentorados').innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+      <div class="mcard cg"><div class="lbl">Ativos</div><div class="val" style="color:var(--acc4)">${ativos}</div></div>
+      <div class="mcard cy"><div class="lbl">30 dias</div><div class="val" style="color:#fff176">${d30}</div></div>
+      <div class="mcard co"><div class="lbl">60 dias</div><div class="val" style="color:var(--acc5)">${d60}</div></div>
+      <div class="mcard cm"><div class="lbl">Expirados</div><div class="val" style="color:var(--acc3)">${exp}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">⭐ Mentorados <span id="men_count" style="font-size:11px;color:var(--txt3);font-weight:400">${men.length} total</span></span></div>
+      <div class="filters">
+        <div class="radio-group" id="men_rg">
+          ${[['','Todos'],['ATIVO','Ativos'],['30','30 dias'],['60','60 dias'],['EXPIRADO','Expirados']].map(([v,l],i)=>`<span class="rbtn${i===0?' sel':''}" onclick="menFilter('status','${v}',this)">${l}</span>`).join('')}
+        </div>
+        <input class="fi" placeholder="Nome ou e-mail…" style="min-width:180px;margin-left:auto" oninput="menFilter('txt',this.value,null)">
+      </div>
+      <table><thead><tr><th>Nome</th><th>E-mail</th><th>Status</th></tr></thead><tbody id="men_tbody"></tbody></table>
+    </div>`;
+  window.menFilter=function(type,val,el){
+    if(type==='status'){filterStatus=val;document.querySelectorAll('#men_rg .rbtn').forEach(b=>b.classList.remove('sel'));if(el)el.classList.add('sel');}
+    else filterTxt=val;
+    const rows=getFiltered();
+    const cnt=document.getElementById('men_count');if(cnt)cnt.textContent=`${rows.length} de ${men.length}`;
+    const tb=document.getElementById('men_tbody');if(!tb)return;
+    tb.innerHTML=rows.map(m=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="avatar av-p">${initials(m.name)}</div><span>${TC(m.name)}</span></div></td><td style="color:var(--txt2);font-size:11px">${m.email}</td><td>${statusBadge(m.status)}</td></tr>`).join('')||`<tr><td colspan="3" style="color:var(--txt3);text-align:center;padding:16px">Nenhum resultado.</td></tr>`;
+  };
+  window.menFilter('status','',null);
+}
+
+/* ── BUSCA ── */
+function renderBusca(){
+  document.getElementById('pbusca').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">🔍 Buscar aluno</span></div>
+      <input id="qinput" class="fi" placeholder="Nome ou e-mail…" style="width:100%;margin-bottom:14px" oninput="buscar(this.value)" />
+      <div id="bresult"></div>
+    </div>`;
+}
+window.buscar=function(q){
+  const nq=normN(q);if(!nq||nq.length<2){document.getElementById('bresult').innerHTML='';return}
+  const found=ALL.students.filter(s=>normN(s.name).includes(nq)||s.email.includes(nq));
+  if(!found.length){document.getElementById('bresult').innerHTML='<p style="color:var(--txt3);text-align:center;padding:20px">Nenhum aluno encontrado.</p>';return}
+  const s=found[0];const mainN=Object.entries(s.niveis).sort((a,b)=>b[1]-a[1])[0];
+  const menInfo=ALL.mentorados.find(m=>m.email===s.email);
+  document.getElementById('bresult').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:14px;background:var(--bg3);border-radius:10px;border:1px solid var(--border)">
+      <div class="avatar ${s.isMentoria?'av-p':'av-c'}" style="width:44px;height:44px;font-size:15px">${initials(s.name)}</div>
+      <div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-weight:700;font-size:15px;color:#fff">${TC(s.name||s.email)}</span>${s.isMentoria?'<span class="badge b-men">mentoria</span>':''}${menInfo?statusBadge(menInfo.status):''}</div>
+      <div style="font-size:11px;color:var(--txt3)">${s.email}</div>${mainN?nivelBadge(mainN[0]):''}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
+      <div class="mcard cc" style="padding:12px"><div class="lbl">Labs</div><div class="val" style="font-size:20px;color:var(--acc2)">${s.labs}</div></div>
+      <div class="mcard co" style="padding:12px"><div class="lbl">Arenas</div><div class="val" style="font-size:20px;color:var(--acc3)">${s.arenas}</div></div>
+      <div class="mcard cg" style="padding:12px"><div class="lbl">Total</div><div class="val" style="font-size:20px;color:#fff">${s.total}</div></div>
+    </div>
+    <div class="two-col">
+      <div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Fluent Labs</div>${s.labTs.length?s.labTs.slice().reverse().slice(0,10).map(r=>`<div style="font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--txt2)">${r.ts.split(' ')[0]}</div>`).join(''):'<span style="font-size:12px;color:var(--txt3)">Sem presenças</span>'}</div>
+      <div><div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Arenas</div>${s.arenaTs.length?s.arenaTs.slice().reverse().slice(0,10).map(r=>`<div style="font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between"><span style="color:var(--txt2)">${r.ts.split(' ')[0]}</span>${nivelBadge(r.nivel)}</div>`).join(''):'<span style="font-size:12px;color:var(--txt3)">Sem presenças</span>'}</div>
+    </div>${found.length>1?`<p style="font-size:11px;color:var(--txt3);margin-top:9px">${found.length} resultados — refine a busca.</p>`:''}`;
+}
+
+/* ── CONFIG ── */
+const GAS_CODE=`const LAB_ID       = '119PT30bleKXp3snaawcdq9hF6qPfsfFpOlzWmPFODvg';
+const ARENA_ID     = '1qrBtBa6gkdq8rPmkEKCWKxZshosNVCwSopmnEtbic6A';
+const MENTORIA_ID  = '1CZ4qfhjEhrxtnTMBITRjOUy9o_I8LEPRoD6nuSrLdvs';
+
+function doGet(e) {
+  const type = (e.parameter.type || 'labs').toLowerCase();
+  let id, sheetIndex = 0;
+  if (type === 'arenas')    id = ARENA_ID;
+  else if (type === 'mentoria') { id = MENTORIA_ID; sheetIndex = 0; }
+  else id = LAB_ID;
+  const ss = SpreadsheetApp.openById(id);
+  const sh = ss.getSheets()[sheetIndex];
+  const rows = sh.getDataRange().getValues();
+  const out = rows.slice(1).map(r => r.join(',')).join('\\n');
+  return ContentService.createTextOutput(JSON.stringify({ ok: true, data: out }))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+function renderConfig(){
+  document.getElementById('pconfig').innerHTML=`
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">⚙ Conectar planilhas</span></div>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px"><div class="step-num">1</div><div style="font-size:12px;color:var(--txt2);line-height:1.6">Abra qualquer planilha → <strong style="color:var(--txt)">Extensões → Apps Script</strong>. Apague o código existente e cole:</div></div>
+      <textarea class="code-area" rows="14" readonly>${GAS_CODE}</textarea>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin:14px 0"><div class="step-num">2</div><div style="font-size:12px;color:var(--txt2);line-height:1.6"><strong style="color:var(--txt)">Implantar → Nova implantação → App da Web → Qualquer pessoa → Implantar</strong>. Copie a URL.</div></div>
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px"><div class="step-num">3</div><div style="font-size:12px;color:var(--txt2)">Cole a URL e conecte:</div></div>
+      <div style="display:flex;gap:8px">
+        <input id="api_url" class="fi" style="flex:1" value="${apiUrl}" placeholder="https://script.google.com/macros/s/…/exec">
+        <button class="btn-refresh" onclick="connectAPI()">Conectar</button>
+      </div>
+      <div id="api_msg" style="font-size:11px;color:var(--txt3);margin-top:8px"></div>
+    </div>`;
+}
+
+window.connectAPI=async function(){
+  const url=document.getElementById('api_url').value.trim();if(!url)return;
+  apiUrl=url;document.getElementById('api_msg').textContent='Testando…';
+  try{await loadFromAPI();document.getElementById('api_msg').innerHTML='<span style="color:var(--acc4)">✓ Conectado com sucesso!</span>';setConn(true);}
+  catch(e){document.getElementById('api_msg').innerHTML=`<span style="color:var(--acc3)">✗ Erro: ${e.message}</span>`}
+}
+
+function setConn(ok,source=''){
+  const dot=document.getElementById('sb-dot');const txt=document.getElementById('sb-status-txt');
+  if(dot){dot.className='sb-dot '+(ok?'ok':'warn')}
+  if(txt){
+    txt.textContent=ok?`conectado (${source})`:'dados locais';
+    txt.style.color=ok?'var(--acc4)':'var(--txt2)';
+  }
+  const el=document.getElementById('sb-ts');
+  if(el)el.textContent='Atualizado às '+new Date().toLocaleTimeString('pt-BR');
+}
+
+async function loadFromAPI(){
+  const [rL,rA,rM]=await Promise.all([
+    fetch(apiUrl+'?type=labs').then(r=>r.json()),
+    fetch(apiUrl+'?type=arenas').then(r=>r.json()),
+    fetch(apiUrl+'?type=mentoria').then(r=>r.json())
+  ]);
+  if(!rL.ok||!rA.ok||!rM.ok)throw new Error('API retornou erro');
+  ALL.labs=parseRows(rL.data,false);
+  ALL.arenas=parseRows(rA.data,true);
+  ALL.mentorados=parseMentoradosAPI(rM.data);
+  buildMentoriaSet(ALL.mentorados);
+  ALL.students=merge(ALL.labs,ALL.arenas);
+  rebuild();
+}
+
+function rebuild(){
+  Object.values(chartRefs).forEach(c=>{try{c.destroy()}catch(e){}});
+  Object.keys(chartRefs).forEach(k=>delete chartRefs[k]);
+  renderMetrics();renderAllTabs();
+  const ts=new Date().toLocaleTimeString('pt-BR');
+  const el=document.getElementById('sb-ts');if(el)el.textContent='Atualizado às '+ts;
+}
+
+function renderAllTabs(){
+  renderGeral();renderAnalise();renderRanking();renderLabs();renderArenas();renderMentorados();renderBusca();renderConfig();
+}
+
+const PAGE_LABELS={'geral':'Visão Geral','analise':'Análise','ranking':'Ranking','labs':'Fluent Labs','arenas':'Arenas','mentorados':'Mentorados','busca':'Buscar Aluno','config':'Conectar'};
+window.navTo=function(id,el){
+  const tabs=['geral','analise','ranking','labs','arenas','mentorados','busca','config'];
+  tabs.forEach(t=>{const p=document.getElementById('p'+t);if(p)p.style.display=t===id?'':'none'});
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const lbl=document.getElementById('tb-page');if(lbl)lbl.textContent=PAGE_LABELS[id]||id;
+  if(id==='ranking'&&chartRefs['chartMain']===undefined)renderRkRows(_rkExp);
+}
+
+async function loadData(){
+  if(apiUrl){try{await loadFromAPI();setConn(true);return}catch(e){console.warn('API falhou, usando local')}}
+  ALL.labs=parseRows(RAW_LABS,false);
+  ALL.arenas=parseRows(RAW_ARENAS,true);
+  ALL.mentorados=parseMentoradosLocal(RAW_MENTORADOS);buildMentoriaSet(ALL.mentorados);
+  ALL.students=merge(ALL.labs,ALL.arenas);
+  rebuild();
+  const el=document.getElementById('sb-ts');if(el)el.textContent='Dados locais (12/06)';
+}
+
+loadData();
+</script>
