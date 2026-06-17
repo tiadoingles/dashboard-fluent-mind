@@ -63,7 +63,6 @@ body{font-family:'Inter',system-ui;background:var(--bg0);color:var(--txt);font-s
 .mcard .lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
 .mcard .val{font-size:26px;font-weight:700;color:#fff;line-height:1}
 .mcard .sub{font-size:10px;color:var(--txt3);margin-top:4px}
-.mcard .spark{position:absolute;bottom:0;right:0;width:80px;height:40px;opacity:.3}
 .glow-p{box-shadow:0 4px 20px rgba(124,77,255,.2)}
 .glow-c{box-shadow:0 4px 20px rgba(0,229,255,.15)}
 
@@ -144,9 +143,6 @@ tr:hover td{background:rgba(124,77,255,.06)}
 .toggle-btn{background:var(--bg4);border:1px solid var(--border2);color:var(--acc2);padding:4px 11px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;display:flex;align-items:center;gap:5px;transition:all .15s}
 .toggle-btn:hover{background:var(--bg3);border-color:rgba(124,77,255,.4)}
 
-/* ── SPARKLINE ── */
-.sparkline{display:inline-block}
-
 /* ── CONFIG ── */
 .step-num{min-width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 textarea.code-area{width:100%;font-family:monospace;font-size:10px;padding:12px;border:1px solid var(--border2);border-radius:8px;background:var(--bg0);color:var(--acc2);resize:vertical;line-height:1.6}
@@ -160,7 +156,7 @@ code{font-family:monospace;font-size:10px;background:var(--bg4);padding:2px 6px;
 ::-webkit-scrollbar-thumb{background:rgba(124,77,255,.4);border-radius:2px}
 </style>
 
-<!-- SIDEBAR -->
+<!-- LOGIN -->
 <style>
 #login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#060d1f 0%,#0f1e38 50%,#060d1f 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
 .login-box{background:#0f1e38;border:1px solid rgba(124,77,255,.3);border-radius:20px;padding:40px 36px;width:360px;box-shadow:0 0 60px rgba(124,77,255,.2)}
@@ -200,6 +196,7 @@ code{font-family:monospace;font-size:10px;background:var(--bg4);padding:2px 6px;
   </div>
 </div>
 
+<!-- SIDEBAR -->
 <div class="sidebar">
   <div class="sb-logo">
     <div class="sb-logo-title">Fluent Mind <span>Academy</span></div>
@@ -277,7 +274,7 @@ setInterval(()=>{
   document.getElementById('clock').textContent=n.toLocaleTimeString('pt-BR');
 },1000);
 
-/* ─── RAW DATA ─── */
+/* ─── USUÁRIOS ─── */
 const USERS={
   'tiadoingles':'aDMIN1089*',
   'terceiriza':'csterceiriza123'
@@ -290,8 +287,8 @@ function doLogin(){
   if(USERS[u]&&USERS[u]===p){
     document.getElementById('login-screen').style.display='none';
     sessionStorage.setItem('fma_auth','1');
-    // Só carrega dados após login
-if(sessionStorage.getItem('fma_auth')==='1') loadData();  } else {
+    loadData();
+  } else {
     err.style.display='block';
     document.getElementById('login-pass').value='';
     setTimeout(()=>err.style.display='none',3000);
@@ -303,7 +300,8 @@ if(sessionStorage.getItem('fma_auth')==='1'){
   document.getElementById('login-screen').style.display='none';
 }
 
- 07:07:04,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+/* ─── RAW DATA ─── */
+const RAW_LABS=`20/05/2026 07:07:04,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
 21/05/2026 07:07:09,bel pocai,belpocai@gmail.com
 21/05/2026 07:07:52,Edith Girardi,emcgirardi@gmail.com
 21/05/2026 07:08:44,Adry Santos,adry@canaldojoel.com
@@ -487,35 +485,6 @@ const RAW_ARENAS=`20/05/2026 11:02:42,Aline Prado,aline@projetarviagens.com.br,B
 11/06/2026 17:24:28,Vanessa Oliveira,simplesmentessencial@gmail.com,RECÉM CHEGADOS
 11/06/2026 19:05:25,Edina Tavares de Lima Montagnoli,montagnoliedina@yahoo.com.br,AVANÇADO
 11/06/2026 19:05:50,Adry Santos,adry@canaldojoel.com,AVANÇADO`;
-
-let ALL={labs:[],arenas:[],students:[],mentorados:[]}, chartRefs={};
-let apiUrl='https://script.google.com/macros/s/AKfycbyEQhJiNKeSS_TThxiv-9x6LNjJRjQ7j8OW8_azk8cUXDOAz8K120laxxr7hZDv7jIw/exec';
-let MENTORIA_SET=new Set();
-
-const SB_URL='https://ufjrkhunbomtkgqqethc.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmanJraHVuYm9tdGtncXFldGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDY2NTMsImV4cCI6MjA5NzEyMjY1M30.2L1D_mjP1zzm5zO1edzpeeSLM21aCqaGGPyInIzBcjw';
-
-async function fetchSupabase(table){
-  const res=await fetch(`${SB_URL}/rest/v1/${table}?select=*&limit=10000`,{
-    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'}
-  });
-  if(!res.ok)throw new Error(`Supabase erro ${res.status} em ${table}`);
-  return res.json();
-}
-
-async function loadFromSupabase(){
-  const [labs,arenas,men]=await Promise.all([
-    fetchSupabase('fluent_labs'),
-    fetchSupabase('arenas'),
-    fetchSupabase('mentorados')
-  ]);
-  ALL.labs=labs.map(r=>({ts:r.ts||'',name:r.name||'',email:normE(r.email||''),date:parseBRDate(r.ts||'')})).filter(r=>r.email);
-  ALL.arenas=arenas.map(r=>({ts:r.ts||'',name:r.name||'',email:normE(r.email||''),nivel:(r.nivel||'').toUpperCase(),date:parseBRDate(r.ts||'')})).filter(r=>r.email);
-  ALL.mentorados=men.map(r=>({name:r.name||'',email:normE(r.email||''),status:r.status||''})).filter(r=>r.email);
-  buildMentoriaSet(ALL.mentorados);
-  ALL.students=merge(ALL.labs,ALL.arenas);
-  rebuild();
-}
 
 const RAW_MENTORADOS=`Ademir,junior@imperiocontabilidade.com.br,60 DIAS P/ EXPIRAR
 Adriana Costa dos Santos,adry@canaldojoel.com,ATIVO
@@ -749,6 +718,35 @@ Virginia Lara Silva Lucas,virginialslucas@gmail.com,30 DIAS P/ EXPIRAR
 Wania Nobrega Sanches,wns6379@gmail.com,ATIVO
 Zaida Jose dos Santos,zaida@uai.com.br,ATIVO`;
 
+let ALL={labs:[],arenas:[],students:[],mentorados:[]}, chartRefs={};
+let apiUrl='https://script.google.com/macros/s/AKfycbyEQhJiNKeSS_TThxiv-9x6LNjJRjQ7j8OW8_azk8cUXDOAz8K120laxxr7hZDv7jIw/exec';
+let MENTORIA_SET=new Set();
+
+const SB_URL='https://ufjrkhunbomtkgqqethc.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmanJraHVuYm9tdGtncXFldGhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NDY2NTMsImV4cCI6MjA5NzEyMjY1M30.2L1D_mjP1zzm5zO1edzpeeSLM21aCqaGGPyInIzBcjw';
+
+async function fetchSupabase(table){
+  const res=await fetch(`${SB_URL}/rest/v1/${table}?select=*&limit=10000`,{
+    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'}
+  });
+  if(!res.ok)throw new Error(`Supabase erro ${res.status} em ${table}`);
+  return res.json();
+}
+
+async function loadFromSupabase(){
+  const [labs,arenas,men]=await Promise.all([
+    fetchSupabase('fluent_labs'),
+    fetchSupabase('arenas'),
+    fetchSupabase('mentorados')
+  ]);
+  ALL.labs=labs.map(r=>({ts:r.ts||'',name:r.name||'',email:normE(r.email||''),date:parseBRDate(r.ts||'')})).filter(r=>r.email);
+  ALL.arenas=arenas.map(r=>({ts:r.ts||'',name:r.name||'',email:normE(r.email||''),nivel:(r.nivel||'').toUpperCase(),date:parseBRDate(r.ts||'')})).filter(r=>r.email);
+  ALL.mentorados=men.map(r=>({name:r.name||'',email:normE(r.email||''),status:r.status||''})).filter(r=>r.email);
+  buildMentoriaSet(ALL.mentorados);
+  ALL.students=merge(ALL.labs,ALL.arenas);
+  rebuild();
+}
+
 const normE=s=>(s||'').toLowerCase().trim().replace(/\s+/g,'');
 const normN=s=>(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
 const TC=s=>(s||'').replace(/\b\w/g,c=>c.toUpperCase());
@@ -758,13 +756,11 @@ const isMen=e=>MENTORIA_SET.has(normE(e));
 function parseBRDate(s){
   if(!s)return null;
   const str=s.toString().trim();
-  // Formato BR: "15/06/2026 07:30:00"
   if(/^\d{2}\/\d{2}\/\d{4}/.test(str)){
     const[d,t]=(str).split(' ');
     const p=d.split('/');
     return new Date(+p[2],+p[1]-1,+p[0],+((t||'00:00').split(':')[0]),+((t||'00:00').split(':')[1]));
   }
-  // Formato ISO / Mon Jun 15 2026... (vindo do Supabase via Apps Script)
   const d=new Date(str);
   return isNaN(d)?null:d;
 }
@@ -948,24 +944,17 @@ function renderGeral(){
 /* ── ANÁLISE ── */
 function renderAnalise(){
   const all=[...ALL.labs,...ALL.arenas];
-  // Semanas
   const weekMap={};
   all.forEach(r=>{if(r.date){const wk=weekKey(r.date);if(!weekMap[wk])weekMap[wk]={lab:0,arena:0,emails:new Set()};if(r.nivel!==undefined)weekMap[wk].arena++;else weekMap[wk].lab++;weekMap[wk].emails.add(r.email);}});
   const weeks=sortDates(Object.keys(weekMap));
-
-  // Heatmap: dia semana x hora
   const DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const hmData={};
   for(let h=6;h<=22;h++)for(let d=0;d<7;d++){hmData[`${h}_${d}`]=0}
   all.forEach(r=>{if(r.date){const h=r.date.getHours();const d=r.date.getDay();if(h>=6&&h<=22)hmData[`${h}_${d}`]=(hmData[`${h}_${d}`]||0)+1;}});
   const hmMax=Math.max(...Object.values(hmData),1);
-
-  // Horarios populares
   const hourMap={};
   all.forEach(r=>{if(r.date){const h=r.date.getHours();hourMap[h]=(hourMap[h]||0)+1;}});
   const hoursSorted=Object.entries(hourMap).sort((a,b)=>b[1]-a[1]);
-
-  // Alunos sumidos (não aparecem nos últimos 14 dias)
   const cutoff=new Date();cutoff.setDate(cutoff.getDate()-14);
   const recentEmails=new Set(all.filter(r=>r.date&&r.date>=cutoff).map(r=>r.email));
   const allEmails=new Set(all.map(r=>r.email));
@@ -975,20 +964,15 @@ function renderAnalise(){
     const lastDate=rows.reduce((mx,r)=>r.date&&r.date>mx?r.date:mx,new Date(0));
     return{name:TC(rows[0]?.name||e),email:e,lastDate,isMen:isMen(e)};
   }).sort((a,b)=>b.lastDate-a.lastDate);
-
-  // Frequência perfeita (todas as semanas)
   const totalWeeks=weeks.length;
   const perStudentWeeks={};
   all.forEach(r=>{if(r.date){const wk=weekKey(r.date);if(!perStudentWeeks[r.email])perStudentWeeks[r.email]={name:r.name,weeks:new Set()};perStudentWeeks[r.email].weeks.add(wk);}});
   const perfeitos=Object.values(perStudentWeeks).filter(s=>s.weeks.size===totalWeeks);
-
-  // Média por sessão
   const sessoes={};
   all.forEach(r=>{if(r.date){const d=r.ts.split(' ')[0];sessoes[d]=(sessoes[d]||0)+1;}});
   const media=Object.values(sessoes).length?Math.round(Object.values(sessoes).reduce((a,b)=>a+b,0)/Object.values(sessoes).length):0;
 
   document.getElementById('panalise').innerHTML=`
-    <!-- KPIs -->
     <div class="three-col" style="margin-bottom:16px">
       <div class="card" style="text-align:center">
         <div style="font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Média por sessão</div>
@@ -1006,8 +990,6 @@ function renderAnalise(){
         <div style="font-size:10px;color:var(--txt3)">sem presença recente</div>
       </div>
     </div>
-
-    <!-- Comparativo semanal -->
     <div class="card" style="margin-bottom:16px">
       <div class="card-hdr"><span class="card-title">📅 Comparativo semanal — Labs vs Arenas</span><span class="card-sub">${weeks.length} semanas</span></div>
       <div style="position:relative;height:220px"><canvas id="chartSemanas"></canvas></div>
@@ -1017,8 +999,6 @@ function renderAnalise(){
         <span><span class="dot" style="background:var(--acc2)"></span><span style="color:var(--txt2)">Únicos</span></span>
       </div>
     </div>
-
-    <!-- Heatmap -->
     <div class="card" style="margin-bottom:16px">
       <div class="card-hdr"><span class="card-title">🔥 Mapa de calor — Dia × Horário</span><span class="card-sub">intensidade de presença</span></div>
       <div style="overflow-x:auto">
@@ -1048,9 +1028,7 @@ function renderAnalise(){
         <span style="margin-left:8px">Máximo: ${hmMax}</span>
       </div>
     </div>
-
     <div class="two-col">
-      <!-- Horários mais populares -->
       <div class="card">
         <div class="card-hdr"><span class="card-title">⏰ Horários mais populares</span></div>
         ${hoursSorted.slice(0,8).map(([h,c],i)=>`<div style="margin-bottom:10px">
@@ -1061,8 +1039,6 @@ function renderAnalise(){
           <div class="pb"><div class="pbf" style="width:${Math.round(c/hoursSorted[0][1]*100)}%;background:linear-gradient(90deg,var(--acc),var(--acc2))"></div></div>
         </div>`).join('')}
       </div>
-
-      <!-- Alunos sumidos -->
       <div class="card">
         <div class="card-hdr"><span class="card-title">🚨 Sem presença +14 dias</span><span class="badge b-exp">${sumidos.length}</span></div>
         <div style="max-height:280px;overflow-y:auto">
@@ -1077,8 +1053,6 @@ function renderAnalise(){
         </div>
       </div>
     </div>
-
-    <!-- Frequência perfeita -->
     <div class="card" style="margin-top:16px">
       <div class="card-hdr"><span class="card-title">✅ Frequência perfeita — presentes em todas as ${totalWeeks} semanas</span><span class="badge b-ok">${perfeitos.length}</span></div>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
@@ -1408,16 +1382,31 @@ window.navTo=function(id,el){
 }
 
 async function loadData(){
-  if(apiUrl){try{await loadFromAPI();setConn(true);return}catch(e){console.warn('API falhou, usando local')}}
+  // Tenta Supabase primeiro
+  try{
+    await loadFromSupabase();
+    setConn(true,'Supabase');
+    return;
+  }catch(e){console.warn('Supabase falhou, tentando API...',e)}
+  // Tenta API
+  if(apiUrl){
+    try{await loadFromAPI();setConn(true,'API');return}
+    catch(e){console.warn('API falhou, usando dados locais',e)}
+  }
+  // Fallback local
   ALL.labs=parseRows(RAW_LABS,false);
   ALL.arenas=parseRows(RAW_ARENAS,true);
-  ALL.mentorados=parseMentoradosLocal(RAW_MENTORADOS);buildMentoriaSet(ALL.mentorados);
+  ALL.mentorados=parseMentoradosLocal(RAW_MENTORADOS);
+  buildMentoriaSet(ALL.mentorados);
   ALL.students=merge(ALL.labs,ALL.arenas);
   rebuild();
   const el=document.getElementById('sb-ts');if(el)el.textContent='Dados locais (12/06)';
 }
 
-loadData();
+// Só carrega dados se já autenticado (sessão ativa)
+if(sessionStorage.getItem('fma_auth')==='1'){
+  loadData();
+}
 </script>
 </body>
 </html>
