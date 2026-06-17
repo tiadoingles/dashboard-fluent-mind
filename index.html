@@ -283,8 +283,7 @@ function doLogin(){
     document.getElementById('login-screen').style.display='none';
     sessionStorage.setItem('fma_auth','1');
     // Só carrega dados após login
-if(sessionStorage.getItem('fma_auth')==='1') loadData();
-  } else {
+if(sessionStorage.getItem('fma_auth')==='1') loadData();  } else {
     err.style.display='block';
     document.getElementById('login-pass').value='';
     setTimeout(()=>err.style.display='none',3000);
