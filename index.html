@@ -153,6 +153,45 @@ code{font-family:monospace;font-size:10px;background:var(--bg4);padding:2px 6px;
 </style>
 
 <!-- SIDEBAR -->
+<style>
+#login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#060d1f 0%,#0f1e38 50%,#060d1f 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-box{background:#0f1e38;border:1px solid rgba(124,77,255,.3);border-radius:20px;padding:40px 36px;width:360px;box-shadow:0 0 60px rgba(124,77,255,.2)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:.02em}
+.login-logo-title span{background:linear-gradient(90deg,#7c4dff,#00e5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-logo-sub{font-size:12px;color:#4a5a7a;margin-top:4px}
+.login-field{margin-bottom:16px}
+.login-field label{display:block;font-size:11px;color:#8899aa;text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.login-field input{width:100%;padding:11px 14px;background:#162540;border:1px solid rgba(124,77,255,.2);border-radius:10px;color:#e2e8f0;font-size:14px;outline:none;transition:border .2s;font-family:inherit}
+.login-field input:focus{border-color:rgba(0,229,255,.5);box-shadow:0 0 12px rgba(0,229,255,.1)}
+.login-field input::placeholder{color:#4a5a7a}
+.login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#7c4dff,#5c35cc);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .2s;margin-top:8px;font-family:inherit}
+.login-btn:hover{box-shadow:0 0 24px rgba(124,77,255,.5);transform:translateY(-1px)}
+.login-error{background:rgba(255,64,129,.12);border:1px solid rgba(255,64,129,.3);border-radius:8px;padding:10px 14px;font-size:12px;color:#ff4081;margin-top:12px;display:none;text-align:center}
+.login-footer{text-align:center;margin-top:20px;font-size:10px;color:#4a5a7a}
+</style>
+
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div style="font-size:32px;margin-bottom:8px">🎓</div>
+      <div class="login-logo-title">Fluent Mind <span>Academy</span></div>
+      <div class="login-logo-sub">Dashboard de Presença — Acesso Restrito</div>
+    </div>
+    <div class="login-field">
+      <label>Usuário</label>
+      <input type="text" id="login-user" placeholder="Digite seu usuário" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
+    <div class="login-footer">Fluent Mind Academy © 2026</div>
+  </div>
+</div>
+
 <div class="sidebar">
   <div class="sb-logo">
     <div class="sb-logo-title">Fluent Mind <span>Academy</span></div>
@@ -231,7 +270,33 @@ setInterval(()=>{
 },1000);
 
 /* ─── RAW DATA ─── */
-const RAW_LABS=`21/05/2026 07:07:04,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
+const USERS={
+  'tiadoingles':'aDMIN1089*',
+  'terceiriza':'csterceiriza123'
+};
+
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  if(USERS[u]&&USERS[u]===p){
+    document.getElementById('login-screen').style.display='none';
+    sessionStorage.setItem('fma_auth','1');
+    // Só carrega dados após login
+if(sessionStorage.getItem('fma_auth')==='1') loadData();
+  } else {
+    err.style.display='block';
+    document.getElementById('login-pass').value='';
+    setTimeout(()=>err.style.display='none',3000);
+  }
+}
+
+// Verifica se já está autenticado na sessão
+if(sessionStorage.getItem('fma_auth')==='1'){
+  document.getElementById('login-screen').style.display='none';
+}
+
+ 07:07:04,Gleiciane Vasconcellos,gleicianevasconcellos@hotmail.com
 21/05/2026 07:07:09,bel pocai,belpocai@gmail.com
 21/05/2026 07:07:52,Edith Girardi,emcgirardi@gmail.com
 21/05/2026 07:08:44,Adry Santos,adry@canaldojoel.com
